@@ -58,7 +58,7 @@ typings/
 .env
 
 # jetbrains .idea directory
-.idea/*
+.idea/vcs.xml
 
 # do not add the js compiled files
 src/*.js
