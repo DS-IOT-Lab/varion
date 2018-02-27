@@ -1,7 +1,9 @@
+
+
+
 /**
  * @variation { f1 && f2 || f3}
  */
-// fasdf sadf asdf asdf asf
 function getGreeting() {
     console.log("!!!!!");
 
@@ -14,7 +16,8 @@ function getGreeting() {
     }
     return "howdy";
 }
+
 /**
- * @variation { f1 && f2 || f3}
+ * @variation { f1 && f2 || f3 || v1}
  */
 class MyGreeter { }
