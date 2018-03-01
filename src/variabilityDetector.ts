@@ -6,10 +6,15 @@ import {readFileSync} from "fs";
 import * as ts from "typescript";
 import {isUndefined} from "util";
 
-// TODO: find a proper name for variation point identifier instead of "variation"
+/*
+1- TODO: find a proper name for variation point identifier instead of "variation"
+2- TODO: install Bool boolean expression parser and integrate with project!
+3- TODO: find a way for code elimination.
+ */
 
 export function checkVariability(sourceFile: ts.SourceFile) {
     checkVariabilityForNode(sourceFile);
+
 
     /**
      * searches node comments and JSDocs for any variability identifiers.
@@ -98,6 +103,11 @@ export function checkVariability(sourceFile: ts.SourceFile) {
      * @param doc
      */
     function extractInfoFromTags(doc: any) {
+
+        if (isUndefined(doc.tags)) {
+            return ;
+        }
+
         console.log("JS Doc: {pos:" + doc.pos + " end: " + doc.end + "} tags: " + doc.tags.toString());
 
         for(let i = 0; i < doc.tags.length; i++) {
