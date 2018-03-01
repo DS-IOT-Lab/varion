@@ -5,11 +5,18 @@
 import {readFileSync} from "fs";
 import * as ts from "typescript";
 import {isUndefined} from "util";
+import * as doctrine from "doctrine";
 
-// TODO: find a proper name for variation point identifier instead of "variation"
+
+/*
+1- TODO: find a proper name for variation point identifier instead of "variation"
+2- TODO: install Bool boolean expression parser and integrate with project!
+3- TODO: find a way for code elimination.
+ */
 
 export function checkVariability(sourceFile: ts.SourceFile) {
     checkVariabilityForNode(sourceFile);
+
 
     /**
      * searches node comments and JSDocs for any variability identifiers.
@@ -36,6 +43,7 @@ export function checkVariability(sourceFile: ts.SourceFile) {
 
 
             // logging each node basic properties
+            console.log("Block info: ");
             console.log(node.kind + " pos: " + node.pos + " end:" + node.end);
 
             let sourceText = sourceFile.text;
@@ -76,16 +84,17 @@ export function checkVariability(sourceFile: ts.SourceFile) {
         if (!isUndefined(comments)) {
 
             for(let cmt in comments) {
-                // TODO: split the flag and conditions from single line comments.
+                let commentText = text.slice(comments[cmt].pos, comments[cmt].end).replace(/\s/g, "").slice(2);
+
+                let parsedComments = doctrine.parse(commentText, {unwrap:true, tags:["variability"]});
+                console.log(parsedComments);
 
                 // log the comments!
                 console.log(
                     "comment #" +
-                    cmt + ": " +
-                    text.slice(
-                        comments[cmt].pos,
-                        comments[cmt].end)
-                );
+                    cmt + ":\n\t comment-pos = " + comments[cmt].pos +
+                    ";\n\t comment-end = " + comments[cmt].end +
+                    ";\n\t text = " + commentText);
 
             }
         }
@@ -98,6 +107,11 @@ export function checkVariability(sourceFile: ts.SourceFile) {
      * @param doc
      */
     function extractInfoFromTags(doc: any) {
+
+        if (isUndefined(doc.tags)) {
+            return ;
+        }
+
         console.log("JS Doc: {pos:" + doc.pos + " end: " + doc.end + "} tags: " + doc.tags.toString());
 
         for(let i = 0; i < doc.tags.length; i++) {

@@ -10,5 +10,8 @@
   "license": "ISC",
   "dependencies": {
     "@types/node": "9.4.6"
+  },
+  "devDependencies": {
+    "doctrine": "2.1.0"
   }
 }
