@@ -14,10 +14,17 @@ function getGreeting() {
     {
         console.log("Hello!");
         console.log();
+
+
+
         // @variation {f4 && g1}
+
+
+
         {
             console.log("Giggle at the funeral!");
             console.log("...");
+
         }
         console.log();
         console.log();
