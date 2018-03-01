@@ -1,0 +1,14 @@
+{
+  "name": "compilerapi",
+  "version": "1.0.0",
+  "description": "TS compiler API test",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Navud",
+  "license": "ISC",
+  "dependencies": {
+    "@types/node": "9.4.6"
+  }
+}
