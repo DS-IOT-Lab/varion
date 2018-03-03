@@ -2,12 +2,12 @@
 
 
 /**
- * @variation { f1 && f2 || f3}
+ * @variation { f1 and f2 or f3}
  */
 function getGreeting() {
     console.log("!!!!!");
 
-    // @variation {f1 && g2}
+    // @variation {f1 and g2}
     {
         console.log("Hello!");
         console.log();
@@ -18,6 +18,6 @@ function getGreeting() {
 }
 
 /**
- * @variation { f1 && f2 || f3 || v1}
+ * @variation { f1 and f2 or f3 or v1}
  */
 class MyGreeter { }

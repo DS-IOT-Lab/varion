@@ -6,12 +6,14 @@ import {readFileSync} from "fs";
 import * as ts from "typescript";
 import {isUndefined} from "util";
 import * as doctrine from "doctrine";
+import * as filter from "../lib/filter.js";
 
+import * as data from "../configuration/dev-variability.json";
 
 /*
-1- TODO: find a proper name for variation point identifier instead of "variation"
-2- TODO: install Bool boolean expression parser and integrate with project!
-3- TODO: find a way for code elimination.
+ 1- TODO: find a proper name for variation point identifier instead of "variation"
+ 2- TODO: install Bool boolean expression parser and integrate with project! Link: https://github.com/cucumber-attic/bool
+ 3- TODO: find a way for code elimination.
  */
 
 export function checkVariability(sourceFile: ts.SourceFile) {
@@ -63,8 +65,8 @@ export function checkVariability(sourceFile: ts.SourceFile) {
      * @param node
      */
     function searchInJSDoc(node: ts.Node) {
-        if(!isUndefined(node.parent) && !isUndefined(node.parent.jsDoc)) {
-            for(let i = 0; i< node.parent.jsDoc.length; i++) {
+        if (!isUndefined(node.parent) && !isUndefined(node.parent.jsDoc)) {
+            for (let i = 0; i < node.parent.jsDoc.length; i++) {
                 let doc = node.parent.jsDoc[i];
                 extractInfoFromTags(doc);
             }
@@ -83,10 +85,10 @@ export function checkVariability(sourceFile: ts.SourceFile) {
         // if there is a comment search for the '@variation' identifier among them!
         if (!isUndefined(comments)) {
 
-            for(let cmt in comments) {
+            for (let cmt in comments) {
                 let commentText = text.slice(comments[cmt].pos, comments[cmt].end).replace(/\s/g, "").slice(2);
 
-                let parsedComments = doctrine.parse(commentText, {unwrap:true, tags:["variability"]});
+                let parsedComments = doctrine.parse(commentText, {unwrap: true, tags: ["variability"]});
                 console.log(parsedComments);
 
                 // log the comments!
@@ -109,15 +111,24 @@ export function checkVariability(sourceFile: ts.SourceFile) {
     function extractInfoFromTags(doc: any) {
 
         if (isUndefined(doc.tags)) {
-            return ;
+            return;
         }
 
         console.log("JS Doc: {pos:" + doc.pos + " end: " + doc.end + "} tags: " + doc.tags.toString());
 
-        for(let i = 0; i < doc.tags.length; i++) {
+        for (let i = 0; i < doc.tags.length; i++) {
             console.log("\t" + i + ")");
             console.log("\tTag name:" + doc.tags[i].tagName.escapedText);
-            console.log("\tComment:" + doc.tags[i].comment);
+
+            let comment = doc.tags[i].comment;
+            comment = comment.slice(1, comment.length - 1);
+            console.log("\tComment:" + comment);
+
+            let myFilter = filter.compileExpression(comment);
+            let variabilityInstance = data["variability"];
+
+            let res = myFilter(variabilityInstance);
+            console.log("Variation Check Result:" + res);
         }
 
         console.log();
