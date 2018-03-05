@@ -1,9 +1,9 @@
 {
   "variability": {
-    "f1": true,
-    "f2": false,
-    "f3": true,
-    "g1": false,
-    "g2": true
+    "f1": 1,
+    "f2": 0,
+    "f3": 1,
+    "g1": 0,
+    "g2": 1
   }
 }
