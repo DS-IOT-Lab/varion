@@ -64,3 +64,5 @@ typings/
 src/*.js
 testScripts/*.js
 
+.idea/
+src/tst.ts
