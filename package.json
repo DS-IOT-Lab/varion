@@ -12,6 +12,7 @@
     "@types/node": "9.4.6"
   },
   "devDependencies": {
-    "doctrine": "2.1.0"
+    "doctrine": "2.1.0",
+    "ts-simple-ast": "8.2.1"
   }
 }
