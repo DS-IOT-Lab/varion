@@ -61,8 +61,11 @@ typings/
 .idea/vcs.xml
 
 # do not add the js compiled files
-src/*.js
-testScripts/*.js
+**/src/**/*.js
+**/testScripts/*.js
+
+# generated files
+**/dist
 
 .idea/
 src/tst.ts

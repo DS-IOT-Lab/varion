@@ -1,23 +1,54 @@
+import Project, {SourceFile} from "ts-simple-ast";
 
-
-
-/**
- * @variation { f1 and f2 or f3}
- */
-function getGreeting() {
-    console.log("!!!!!");
-
-    // @variation {f1 and g2}
-    {
-        console.log("Hello!");
-        console.log();
-        console.log();
-        console.log();
-    }
-    return "howdy";
+// @presence {NOT (F1) AND F2}
+{
+  import Project, {SourceFile} from "ts-simple-ast";
+  import {VariabilityDetector} from "./VariabilityDetector";
 }
+// @presence {NOT (F1) AND F2}
 
+import Project, {SourceFile} from "ts-simple-ast";
+import {VariabilityDetector} from "./VariabilityDetector";
+    
 /**
- * @variation { f1 and f2 or f3 or v1}
+ * @presence {F1}
  */
-class MyGreeter { }
+declare namespace TSExample {
+    /**
+     * @presence {NOT (F4 AND F1)}
+     */
+    enum Color { Red, Green, Blue }
+
+    /**
+     * @presence {F1 OR F2 AND NOT (F3)}
+     */
+    interface IStudent {
+        // ...
+    }
+    /**
+     * @presence {F1 AND F2}
+     */
+    class College {
+        // ...
+    }
+    class Student extends College implements IStudent {
+        // ...
+        /**
+         * @presence {F4}
+         */
+        public age() {
+            // ...
+        }
+    }
+    /**
+     * @presence {NOT (F3)}
+     */
+    function greeter(student: Student) {
+        // ...
+    }
+    // @presence {NOT (F1) AND F2}
+    {
+        let f = function (i: number) { return i + i; }
+    }
+    // ...
+}
