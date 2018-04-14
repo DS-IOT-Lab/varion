@@ -15,8 +15,6 @@ export class HeroesComponent {
     }
 }
 
-@Component(
-)
 export class HeroAccessory{
 
 }

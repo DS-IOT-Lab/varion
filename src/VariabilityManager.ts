@@ -21,7 +21,7 @@ export class VariabilityManager {
         this.rootDirectoryPath = rootDirectoryPath;
         
         
-        this.project = new Project({compilerOptions: {outDir: 'dist'}});
+        this.project = new Project({compilerOptions: {outDir: targetDirectoryPath.toString()}});
         this.project.addExistingSourceFiles(rootDirectoryPath + "/**/*.ts");
 
         this.init();
@@ -41,5 +41,5 @@ export class VariabilityManager {
     }
 }
 
-let example =  new VariabilityManager("../../testScripts", '', '');
+let example =  new VariabilityManager("../testScripts", '../dist', '');
 

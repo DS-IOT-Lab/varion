@@ -64,5 +64,8 @@ typings/
 **/src/**/*.js
 **/testScripts/*.js
 
+# generated files
+**/dist
+
 .idea/
 src/tst.ts

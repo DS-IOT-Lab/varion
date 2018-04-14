@@ -69,8 +69,39 @@ export class VariabilityDetector {
             + classDec.getEnd()
             + ')');
 
+
+        // get class decorators
+        let classDecorators: Decorator[] = classDec.getDecorators();
+
+        // removing decorators
+        console.log('1) Removing ' + classDec.getName() + ' decorators:');
+        for (let i = 0; i < classDecorators.length; i++) {
+            console.log('1- ' + i + ') Removing decorator: (#Decorator, '
+                + classDecorators[i].getName()
+                + ', '
+                + classDecorators[i].getPos()
+                + ', '
+                + classDecorators[i].getEnd()
+                + ')');
+
+            classDecorators[i].remove();
+        }
+
+        //removing JSDocs
+        console.log('2- Removing ' + classDec.getName() + ' JS Docs:');
+        let jsDocs = classDec.getJsDocs();
+        for (let i = 0; i<jsDocs.length ; i++) {
+            console.log('2-' + i + ') Removing JSDoc: (#JSDoc, '
+                + jsDocs[i].getPos()
+                + ', '
+                + jsDocs[i].getEnd()
+                + ')' );
+
+            jsDocs[i].remove();
+        }
+
         // removing class itself
-        console.log('1- Removing class: ' + classDec.getName());
+        console.log('3- Removing class: ' + classDec.getName());
         sourceFile.removeText(classDec.getPos(), classDec.getEnd());
     }
 
