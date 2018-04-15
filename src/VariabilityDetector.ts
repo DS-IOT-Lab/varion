@@ -10,73 +10,70 @@ import {
     ts,
     JSDoc,
     JSDocTag,
-    Decorator
+    Decorator, MethodDeclaration
 } from "ts-simple-ast";
 import {ConditionEvaluator} from "./ConditionEvaluator";
 
 
 export class VariabilityDetector {
     public static analyzeSourceFile(sourceFile: SourceFile) {
-        // VariabilityDetector.analyzeImportDeclaration(sourceFile);
         VariabilityDetector.analyzeClassDeclaration(sourceFile);
+        // todo: analyze imports
+        // todo: analyze modules
+        // todo: analyze enums
+        // todo: analyze interfaces
     }
 
     private static analyzeImportDeclaration(sourceFile: SourceFile) {
-        let x: Block[] = sourceFile.getChildren()[0].getChildrenOfKind(SyntaxKind.Block);
-
-        for (let i = 0; i < x.length; i++) {
-            let block: Block = x[i];
-            let comments = ts.getLeadingCommentRanges(sourceFile.getText(), block.getPos());
-
-            console.log("Heeey" + block.getPos());
-            if (comments == undefined) {
-                continue;
-            }
-
-            for (let j = 0; j < comments.length; j++) {
-                console.log(sourceFile.getText().slice(comments[j].pos, comments[j].end));
-            }
-
-        }
+        // todo: implement
     }
 
     private static analyzeClassDeclaration(sourceFile: SourceFile) {
         let classes: ClassDeclaration[] = sourceFile.getChildren()[0].getChildrenOfKind(SyntaxKind.ClassDeclaration);
 
+        // iterating classes declared inside each source file
         for (let i = 0; i < classes.length; i++) {
             let classDec: ClassDeclaration = classes[i];
             let jsDocs = classDec.getJsDocs();
+            let isIncluded = true;
 
-            console.log('Analyzing ' + classDec.getName() + ' ...');
+            console.log('Analyzing Class ' + classDec.getName() + ' ...');
+
+            // check whether it requires to remove each class itself or not by inspecting the each JSDoc for the class
+            // todo: ask about how to handle multiple JSDoc containing '@presence'
             for (let j = 0; j < jsDocs.length; j++) {
-                let condition = this.processJsDoc(jsDocs[j]);
 
-                if (!condition) {
+                isIncluded = this.processJsDoc(jsDocs[j]);
+                if (!isIncluded) {  // not included
                     this.removeClass(sourceFile, classDec);
-                    break;  // TODO: ask if this is ok?!
+                    break;
                 }
             }
 
+            // if class is included check it's members
+            if (isIncluded) {
+                this.analyzeClassMethods(sourceFile, classDec);
+            }
         }
     }
 
-    private static removeClass(sourceFile: SourceFile, classDec: ClassDeclaration) {
+    private static removeClass(sourceFile: SourceFile, classDeclaration: ClassDeclaration) {
         console.log('Removing class initiation sequence: (#Class, '
-            + classDec.getName()
+            + classDeclaration.getName()
             + ', '
-            + classDec.getPos()
+            + classDeclaration.getPos()
             + ', '
-            + classDec.getEnd()
+            + classDeclaration.getEnd()
             + ')');
 
 
         // get class decorators
-        let classDecorators: Decorator[] = classDec.getDecorators();
+        let classDecorators: Decorator[] = classDeclaration.getDecorators();
 
         // removing decorators
-        console.log('1) Removing ' + classDec.getName() + ' decorators:');
+        console.log('1) Removing ' + classDeclaration.getName() + ' decorators:');
         for (let i = 0; i < classDecorators.length; i++) {
-            console.log('1- ' + i + ') Removing decorator: (#Decorator, '
+            console.log('1-' + i + ') Removing decorator: (#Decorator, '
                 + classDecorators[i].getName()
                 + ', '
                 + classDecorators[i].getPos()
@@ -88,21 +85,21 @@ export class VariabilityDetector {
         }
 
         //removing JSDocs
-        console.log('2- Removing ' + classDec.getName() + ' JS Docs:');
-        let jsDocs = classDec.getJsDocs();
-        for (let i = 0; i<jsDocs.length ; i++) {
+        console.log('2- Removing ' + classDeclaration.getName() + ' JS Docs:');
+        let jsDocs = classDeclaration.getJsDocs();
+        for (let i = 0; i < jsDocs.length; i++) {
             console.log('2-' + i + ') Removing JSDoc: (#JSDoc, '
                 + jsDocs[i].getPos()
                 + ', '
                 + jsDocs[i].getEnd()
-                + ')' );
+                + ')');
 
             jsDocs[i].remove();
         }
 
         // removing class itself
-        console.log('3- Removing class: ' + classDec.getName());
-        sourceFile.removeText(classDec.getPos(), classDec.getEnd());
+        console.log('3) Removing class: ' + classDeclaration.getName());
+        classDeclaration.remove();
     }
 
     private static processJsDoc(jsDoc: JSDoc): boolean {
@@ -126,5 +123,83 @@ export class VariabilityDetector {
         }
 
         return true;
+    }
+
+    private static analyzeClassMethods(sourceFile: SourceFile, classDeclaration: ClassDeclaration) {
+        let instanceMethods: MethodDeclaration[] = classDeclaration.getInstanceMethods();
+        let staticMethods: MethodDeclaration[] = classDeclaration.getStaticMethods();
+
+        for (let i = 0; i < instanceMethods.length; i++) {
+            this.analyzeMethods(sourceFile, classDeclaration, instanceMethods[i]);
+        }
+
+        for (let i = 0; i < staticMethods.length; i++) {
+            this.analyzeMethods(sourceFile, classDeclaration, instanceMethods[i]);
+        }
+    }
+
+    private static analyzeMethods(sourceFile: SourceFile,
+                                  classDeclaration: ClassDeclaration,
+                                  methodDeclaration: MethodDeclaration) {
+
+        let jsDocs: JSDoc[] = methodDeclaration.getJsDocs();
+        let isIncluded: boolean = true;
+
+        // inspecting each method's JS-Doc
+        for (let i = 0; i < jsDocs.length; i++) {
+            isIncluded = this.processJsDoc(jsDocs[i]);
+            if (!isIncluded) {
+                this.removeMethod(sourceFile, classDeclaration, methodDeclaration);
+                sourceFile.emit();
+                break;
+            }
+        }
+
+        // todo: check body of the method
+    }
+
+    private static removeMethod(sourceFile: SourceFile,
+                                classDeclaration: ClassDeclaration,
+                                methodDeclaration: MethodDeclaration) {
+
+        console.log('Removing method initiation sequence: (#Method, '
+            + methodDeclaration.getName()
+            + ', '
+            + methodDeclaration.getPos()
+            + ', '
+            + methodDeclaration.getEnd()
+            + ')');
+
+        // getting and removing method decorators
+        let methodDecorators: Decorator[] = methodDeclaration.getDecorators();
+        console.log('1) Removing ' + methodDeclaration.getName() + ' decorators:');
+        for (let i = 0; i < methodDecorators.length; i++) {
+            console.log('1- ' + i + ') Removing decorator: (#Decorator, '
+                + methodDecorators[i].getName()
+                + ', '
+                + methodDecorators[i].getPos()
+                + ', '
+                + methodDecorators[i].getEnd()
+                + ')');
+
+            methodDecorators[i].remove();
+        }
+
+        // getting and removing method JSDocs
+        console.log('2) Removing ' + methodDeclaration.getName() + ' JS Docs:');
+        let jsDocs: JSDoc[] = methodDeclaration.getJsDocs();
+        for (let i = 0; i < jsDocs.length; i++) {
+            console.log('2-' + i + ') Removing JSDoc: (#JSDoc, '
+                + jsDocs[i].getPos()
+                + ', '
+                + jsDocs[i].getEnd()
+                + ')');
+
+            jsDocs[i].remove();
+        }
+
+        // removing method itself
+        console.log('3) Removing method: ' + methodDeclaration.getName());
+        methodDeclaration.remove();
     }
 }

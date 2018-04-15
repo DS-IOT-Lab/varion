@@ -15,6 +15,19 @@ export class HeroesComponent {
     }
 }
 
-export class HeroAccessory{
+export class HeroAccessory {
 
+    /**
+     * @presence HelloWord1
+     */
+    public sayHelloWord1() {
+        console.log('Hello Word!');
+    }
+
+    /**
+     * @presence HelloWord2
+     */
+    public sayHelloWord2() {
+        console.log('< -- Hello Word! -- >');
+    }
 }

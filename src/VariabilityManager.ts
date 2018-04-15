@@ -13,13 +13,12 @@ export class VariabilityManager {
     private project: Project;
 
     constructor(rootDirectoryPath: String, targetDirectoryPath: String, configurationPath: String) {
-        // TODO:
-        ConditionEvaluator.init('{"f1": true, "g2": false, "f3": true, "f4": false}');
+        // TODO: read the configuration form json files
+        ConditionEvaluator.init('{"f1": true, "g2": false, "f3": true, "f4": false, "f2": true, "HelloWord1": true, "HelloWord2": false}');
 
         this.targetDirectoryPath = targetDirectoryPath;
         this.configurationPath = configurationPath;
         this.rootDirectoryPath = rootDirectoryPath;
-        
         
         this.project = new Project({compilerOptions: {outDir: targetDirectoryPath.toString()}});
         this.project.addExistingSourceFiles(rootDirectoryPath + "/**/*.ts");
@@ -42,4 +41,3 @@ export class VariabilityManager {
 }
 
 let example =  new VariabilityManager("../testScripts", '../dist', '');
-
