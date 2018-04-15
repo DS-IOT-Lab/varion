@@ -1,19 +1,18 @@
-
 import * as filter from "../lib/filter.js";
 
 export class ConditionEvaluator {
     private static rawConfiguration;
     private static transformedConfiguration;
 
-    public static init(configuration){
+    public static init(configuration: string) {
         ConditionEvaluator.rawConfiguration = configuration;
         ConditionEvaluator.transformedConfiguration = JSON.parse(configuration, ConditionEvaluator.transformerFunction);
     }
 
     private static transformerFunction(name, value) {
-        if(name == '') return value;
+        if (name == '') return value;
 
-        if(value) {
+        if (value) {
             return 1;
         } else if (!value) {
             return 0;
@@ -23,10 +22,8 @@ export class ConditionEvaluator {
     }
 
     public static evaluate(conditionExpression: String): Boolean {
+        // todo: remove '{' and '}' from the condition expression
         let compiledExpression = filter.compileExpression(conditionExpression);
         return compiledExpression(this.transformedConfiguration);
     }
 }
-
-//ConditionEvaluator.init('{"f1": true, "g2": false, "f3": true, "f4": false}');
-//console.log(ConditionEvaluator.evaluate(""));
