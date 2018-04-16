@@ -18,14 +18,14 @@ import {ConditionEvaluator} from "./ConditionEvaluator";
 export class VariabilityDetector {
     public static analyzeSourceFile(sourceFile: SourceFile) {
         VariabilityDetector.analyzeClassDeclaration(sourceFile);
-        // todo: analyze imports
-        // todo: analyze modules
-        // todo: analyze enums
-        // todo: analyze interfaces
+        // TODO: analyze imports
+        // TODO: analyze modules
+        // TODO: analyze enums
+        // TODO: analyze interfaces
     }
 
     private static analyzeImportDeclaration(sourceFile: SourceFile) {
-        // todo: implement
+        // TODO: implement
     }
 
     private static analyzeClassDeclaration(sourceFile: SourceFile) {
@@ -36,15 +36,9 @@ export class VariabilityDetector {
             let classDec: ClassDeclaration = classes[i];
             let jsDocs = classDec.getJsDocs();
             let isIncluded = true;
-<<<<<<< HEAD
 
             console.log('Analyzing Class ' + classDec.getName() + ' ...');
 
-=======
-
-            console.log('Analyzing Class ' + classDec.getName() + ' ...');
-
->>>>>>> 4f6ac02f17e8ad0affe4c3a629561fa5cf9fe766
             // check whether it requires to remove each class itself or not by inspecting the each JSDoc for the class
             // todo: ask about how to handle multiple JSDoc containing '@presence'
             for (let j = 0; j < jsDocs.length; j++) {
@@ -161,7 +155,6 @@ export class VariabilityDetector {
             }
         }
 
-<<<<<<< HEAD
         if (isIncluded) {
             this.checkMethodBody(sourceFile, classDeclaration, methodDeclaration)
         }
@@ -175,11 +168,6 @@ export class VariabilityDetector {
     }
 
 
-=======
-        // todo: check body of the method
-    }
-
->>>>>>> 4f6ac02f17e8ad0affe4c3a629561fa5cf9fe766
     private static removeMethod(sourceFile: SourceFile,
                                 classDeclaration: ClassDeclaration,
                                 methodDeclaration: MethodDeclaration) {
