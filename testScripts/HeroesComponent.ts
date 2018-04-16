@@ -23,6 +23,7 @@ export class HeroAccessory {
     public sayHelloWord1() {
         console.log('Hello Word!');
     }
+    
 
     /**
      * @presence HelloWord2
@@ -30,7 +31,6 @@ export class HeroAccessory {
     public sayHelloWord2() {
         console.log('< -- Hello Word! -- >');
     }
-<<<<<<< HEAD
 
     public saySomething() {
         let x = Math.random() * 1000;
@@ -56,6 +56,4 @@ export class HeroAccessory {
 
         }
     }
-=======
->>>>>>> 4f6ac02f17e8ad0affe4c3a629561fa5cf9fe766
 }
