@@ -14,7 +14,7 @@ export class VariabilityManager {
 
     constructor(rootDirectoryPath: String, targetDirectoryPath: String, configurationPath: String) {
         // TODO: read the configuration form json files
-        ConditionEvaluator.init('{"f1": true, "g2": false, "f3": true, "f4": false, "f2": true, "HelloWord1": true, "HelloWord2": false}');
+        ConditionEvaluator.init('{"f1": true, "g2": false, "f3": true, "f4": false, "f2": true, "HelloWord1": true, "HelloWord2": false, "myVar":false, "foo": false, "bar": true}');
 
         this.targetDirectoryPath = targetDirectoryPath;
         this.configurationPath = configurationPath;

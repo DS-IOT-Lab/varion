@@ -13,7 +13,7 @@ import {
 } from "ts-simple-ast";
 import { ConditionEvaluator } from "../ConditionEvaluator";
 import { Analyzer } from './Analyzer';
-import { JSDocAnalyzer } from './JSDocAnalyzer';
+import { DocCommentAnalyzer } from './DocCommentAnalyzer';
 import { BlockAnalyzer } from './BlockAnalyzer';
 
 // singleton 
@@ -43,7 +43,7 @@ export class MethodAnalyzer extends Analyzer {
 
         // inspecting each method's JS-Doc
         for (let i = 0; i < jsDocs.length; i++) {
-            isIncluded = JSDocAnalyzer.analyze(jsDocs[i]);
+            isIncluded = DocCommentAnalyzer.analyzeJsDoc(jsDocs[i]);
             if (!isIncluded) {
                 this.removeMethod(sourceFile, methodDeclaration);
                 sourceFile.emit();

@@ -14,7 +14,7 @@ import {
 import { ConditionEvaluator } from '../ConditionEvaluator';
 import { Analyzer } from './Analyzer';
 import { MethodAnalyzer } from './MethodAnalyzer';
-import { JSDocAnalyzer } from './JSDocAnalyzer';
+import { DocCommentAnalyzer } from './DocCommentAnalyzer';
 
 // singleton
 export class ClassAnalyzer extends Analyzer {
@@ -50,7 +50,7 @@ export class ClassAnalyzer extends Analyzer {
         // TODO: ask about how to handle multiple JSDoc containing '@presence'
         for (let j = 0; j < jsDocs.length; j++) {
 
-            isIncluded = JSDocAnalyzer.analyze(jsDocs[j]);
+            isIncluded = DocCommentAnalyzer.analyzeJsDoc(jsDocs[j]);
             if (!isIncluded) {  // not included
                 this.removeClass(sourceFile, classDec);
                 return false;

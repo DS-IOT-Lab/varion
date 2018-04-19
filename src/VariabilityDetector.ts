@@ -22,10 +22,10 @@ export class VariabilityDetector {
     
     public static analyzeSourceFile(sourceFile: SourceFile) {
         VariabilityDetector.analyzeClassDeclaration(sourceFile);
-        // TODO: analyze imports
-        // TODO: analyze modules
-        // TODO: analyze enums
-        // TODO: analyze interfaces
+        // TODO: analyzeJsDoc imports
+        // TODO: analyzeJsDoc modules
+        // TODO: analyzeJsDoc enums
+        // TODO: analyzeJsDoc interfaces
     }
 
     private static analyzeImportDeclaration(sourceFile: SourceFile) {
