@@ -66,6 +66,9 @@ export class BlockAnalyzer {
             for (let i = 0; i < blockContents.length; i++) {
                 this.traverseBlockContent(sourceFile, blockContents[i]);
             }
+        } else if (!isIncluded) {
+            block.remove();
+            sourceFile.emit();
         }
     }
 
@@ -90,8 +93,11 @@ export class BlockAnalyzer {
         }
 
         for (let i = 0; i < commentsRange.length; i++) {
-            this.extractComment(sourceFile, block, commentsRange[i]);
+            let isIncluded = this.extractComment(sourceFile, block, commentsRange[i]);
 
+            if(!isIncluded) {
+                return false;
+            }
         }
 
         return true;
@@ -105,7 +111,8 @@ export class BlockAnalyzer {
 
         console.log('Extracted Comment: ' + commentText); // TODO: parse and check
 
-        let evalRes = DocCommentAnalyzer.analyzeSingleLineComment(commentText);
+        return DocCommentAnalyzer.analyzeSingleLineComment(commentText);
+
     }
 
     private parseComment(sourceFile: SourceFile,
