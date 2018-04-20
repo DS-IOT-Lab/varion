@@ -1,22 +1,29 @@
 import {
-    ImportDeclaration,
-    SourceFile,
-    SyntaxKind,
-    Block,
-    ClassDeclaration,
     ts,
+    Node,
+    Block,
     JSDoc,
     JSDocTag,
     Decorator,
+    SourceFile,
+    SyntaxKind,
+    IfStatement,
+    DoStatement,
+    ForStatement,
+    SwitchStatement,
+    WhileStatement,
+    ClassDeclaration,
     MethodDeclaration,
-    Node, IfStatement,
+    ImportDeclaration,
 } from 'ts-simple-ast';
+
 import {CommentRange} from 'typescript';
+import * as doctrine from 'doctrine';
+
 import {ConditionEvaluator} from '../ConditionEvaluator';
 import {Analyzer} from './Analyzer';
 import {DocCommentAnalyzer} from './DocCommentAnalyzer';
-import * as doctrine from 'doctrine';
-import {isUndefined} from "util";
+import {isUndefined} from 'util';
 
 const BLOCK_CONTAINING_NODES: Array<SyntaxKind> =
     [SyntaxKind.IfStatement,
@@ -43,11 +50,17 @@ export class BlockAnalyzer {
                 case SyntaxKind.IfStatement:
                     this.analyzeIfStatements(sourceFile, node as IfStatement);
                     break;
+
                 case SyntaxKind.DoStatement:
+                    this.analyzeDoStatement(sourceFile, node as DoStatement);
                     break;
+
                 case SyntaxKind.WhileStatement:
+                    this.analyzeWhileStatement(sourceFile, node as WhileStatement);
                     break;
+
                 case SyntaxKind.ForStatement:
+                    this.analyzeForStatement(sourceFile, node as ForStatement);
                     break;
             }
         }
@@ -55,24 +68,26 @@ export class BlockAnalyzer {
         return false; // FIXME: fix here!
     }
 
+
     private analyzeBlock(sourceFile: SourceFile, block: Block) {
         // first check the block it self!
         let isIncluded = this.analyzeLeadingComments(sourceFile, block);
 
         // if the block is not excluded then check its body
         if (isIncluded) {
-            let blockContents: Node[] = block.getChildren()[1].getChildren();    // getting 'SyntaxList' children
+            // NOTE: reverse it since removal api bug might delete a single comment below the block and cause some additional bugs
+            let blockContents: Node[] = block.getChildren()[1].getChildren().reverse();    // getting 'SyntaxList' children
 
             for (let i = 0; i < blockContents.length; i++) {
                 this.traverseBlockContent(sourceFile, blockContents[i]);
             }
         } else if (!isIncluded) {
             block.remove();
-            sourceFile.emit();
         }
     }
 
     private analyzeIfStatements(sourceFile: SourceFile, ifStatement: IfStatement) {
+        console.log('Analyzing If-Statement ...');
         let blockContents: Block[] = ifStatement.getChildrenOfKind(SyntaxKind.Block);
         let elifContents: IfStatement[] = ifStatement.getChildrenOfKind(SyntaxKind.IfStatement);
 
@@ -85,6 +100,29 @@ export class BlockAnalyzer {
         }
     }
 
+    private analyzeWhileStatement(sourceFile: SourceFile, whileStatement: WhileStatement) {
+        console.log('Analyzing While-Statement ...');
+        let blockContents: Block[] = whileStatement.getChildrenOfKind(SyntaxKind.Block);
+
+        for (let i = 0; i < blockContents.length; i++) {
+            this.traverseBlockContent(sourceFile, blockContents[i]);
+        }
+    }
+
+    private analyzeDoStatement(sourceFile: SourceFile, doStatement: DoStatement) {
+        console.log('Analyzing Do-Statement ...');
+        let blockContents: Block[] = doStatement.getChildrenOfKind(SyntaxKind.Block);
+
+        for (let i = 0; i < blockContents.length; i++) {
+            this.traverseBlockContent(sourceFile, blockContents[i]);
+        }
+    }
+
+    private analyzeForStatement(sourceFile: SourceFile, forStatement: ForStatement) {
+        //TODO: implement
+    }
+
+
     private analyzeLeadingComments(sourceFile: SourceFile, block: Block): boolean {
         let commentsRange: CommentRange[] = ts.getLeadingCommentRanges(sourceFile.getText(), block.getPos());
 
@@ -95,7 +133,7 @@ export class BlockAnalyzer {
         for (let i = 0; i < commentsRange.length; i++) {
             let isIncluded = this.extractComment(sourceFile, block, commentsRange[i]);
 
-            if(!isIncluded) {
+            if (!isIncluded) {
                 return false;
             }
         }
