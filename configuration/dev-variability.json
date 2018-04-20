@@ -1,9 +1,20 @@
 {
-  "variability": {
-    "f1": 1,
-    "f2": 0,
-    "f3": 1,
-    "g1": 0,
-    "g2": 1
+    "gpa": false, 
+    "major": true, 
+    "f1": true, 
+    "g2": false, 
+    "f3": true, 
+    "f4": false, 
+    "f2": true, 
+    "HelloWord1": true, 
+    "HelloWord2": false, 
+    "myVar":false,
+  "foo": true,
+  "bar": true,
+  "hiccup": true,
+  "language": {
+    "persian": false,
+    "english": false,
+    "french": true
   }
 }

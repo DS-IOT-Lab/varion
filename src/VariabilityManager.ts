@@ -1,9 +1,11 @@
 /**
  * Created by navid on 4/7/18.
  */
+
 import Project, {SourceFile} from "ts-simple-ast";
 import {VariabilityDetector} from "./VariabilityDetector";
 import {ConditionEvaluator} from "./ConditionEvaluator";
+var jsonConfig = require('../configuration/dev-variability.json');
 
 export class VariabilityManager {
     private rootDirectoryPath: String;
@@ -13,9 +15,9 @@ export class VariabilityManager {
     private project: Project;
 
     constructor(rootDirectoryPath: String, targetDirectoryPath: String, configurationPath: String) {
-        // TODO: read the configuration form json files
-        ConditionEvaluator.init('{"f1": true, "g2": false, "f3": true, "f4": false, "f2": true, "HelloWord1": true, "HelloWord2": false}');
-
+        ConditionEvaluator.init(jsonConfig);
+        console.log(ConditionEvaluator.evaluate('language.english and language.persian'));
+        
         this.targetDirectoryPath = targetDirectoryPath;
         this.configurationPath = configurationPath;
         this.rootDirectoryPath = rootDirectoryPath;
@@ -40,4 +42,4 @@ export class VariabilityManager {
     }
 }
 
-let example =  new VariabilityManager("../testScripts", '../dist', '');
+let example =  new VariabilityManager('../testScripts', '../dist', '');

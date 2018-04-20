@@ -9,7 +9,8 @@
   "author": "Navud",
   "license": "ISC",
   "dependencies": {
-    "@types/node": "9.4.6"
+    "@types/node": "9.4.6",
+    "expr-eval": "1.2.1"
   },
   "devDependencies": {
     "doctrine": "2.1.0",
