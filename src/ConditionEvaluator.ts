@@ -4,9 +4,9 @@ export class ConditionEvaluator {
     private static rawConfiguration;
     private static transformedConfiguration;
 
-    public static init(configuration: string) {
+    public static init(configuration: any) {
         ConditionEvaluator.rawConfiguration = configuration;
-        ConditionEvaluator.transformedConfiguration = JSON.parse(configuration, ConditionEvaluator.transformerFunction);
+        ConditionEvaluator.transformedConfiguration = configuration;
     }
 
     private static transformerFunction(name, value) {
