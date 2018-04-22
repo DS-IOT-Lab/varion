@@ -50,12 +50,28 @@ class Student {
                     console.log('Hic!');
                 }
             }
+            
+            // @presence {student.language.persian}
+            {
+                console.log('Salam!');
+            }
 
-            console.log('Hellowww World !!!');
+            // @presence {student.language.french}
+            {
+                console.log('Bonjour!');
+            }
+
+            //@presence {student.language.english}
+            {
+                console.log('Hey!');
+            }
+
             i++;
         }
+        
 
     }
 }
 
 let john = new Student('John Wick', 9312430379, 'Master of Assassination', 4.00);
+john.foo();

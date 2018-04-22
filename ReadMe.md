@@ -1,4 +1,4 @@
-# Varion: Variability Manager Project
+# Varion: Variability Manager
 `Varion` is a tool which enables developers to manage variabilities in their `Angular` project using pre-processor notation.
 
 
@@ -28,13 +28,13 @@ Imagine the `JSON` file below describes the user desired configuration model:
         "language": {
             "persian": true,
             "english": false,
-            "french": true
+            "french": false
         }    
     }
 }
 ```
 
-Here we have a `TypeScript` file among all other files which has been annotated with the presence conditions at different points to indicate the variation points.
+Here we have a `TypeScript` file which represents a `Student` class and it has been annotated with the `@presence` tag at different points to indicate the variation points.
 
 
 ```TypeScript
@@ -91,10 +91,93 @@ class Student {
                     console.log('Hic!');
                 }
             }
-
-            console.log('Hellowww World !!!');
+            
+            // @presence {student.language.persian}
+            {
+                console.log('Salam!');
+            }
+            
+            // @presence {student.language.french}
+            {
+                console.log('Bonjour!');
+            }
+            
+            //@presence {student.language.english}
+            {
+                console.log('Hey!');
+            }
+            
             i++;
         }
+    }
 
 }
 ```
+When we run `Varion` it'll iterate through all the `HTML` and `TypeScript` files and when it reaches the `Student` class and according to our configuration model, it'll run all the condition expressions defined in the `Student` class source file and check them against configuration and exclude annotated parts based on the configuration model if required and then derives the final source file.
+
+For example, with the said above configuration our final source file would be:
+
+```TypeScript
+/**
+ * @presence {student.included}
+ */
+class Student {
+    private name: string;
+    private studentNumber: number;
+    private major: string;
+    private gpa: number;
+
+
+    public constructor(name: string, studentNumber: number, major: string, gpa: number) {
+        this.name = name;
+        this.studentNumber = studentNumber;
+        this.major = major;
+        this.gpa = gpa;
+    }
+
+    public toString() {
+        console.log('Info:\n\t student_number: ' + this.studentNumber + '\n\t name: ' + this.name);
+
+        // @presence {student.education.major and not (student.education.gpa)}
+        {
+            console.log('\t major: ' + this.major);
+        }
+    }
+
+    /**
+     * @presence {student.foo.included}
+     */
+    public foo() {
+        console.log('Student foo');
+        let times = Math.random() * 10;
+        let i = 0;
+
+        while (i < times) {
+
+            // @presence {student.foo.hiccup}
+            {
+                let chance = Math.floor(Math.random() * 5);
+                if (chance % 2 == 0) {
+                    console.log('Hic!');
+                }
+            }
+            
+            // @presence {student.language.persian}
+            {
+                console.log('Salam!');
+            }
+            
+            i++;
+        }
+    }
+
+}
+```
+
+
+## TODO:
+  - Create a node package which represents our tool
+  - Implement variability appliance on for-statements and switch-statements
+  - run more tests
+  - apply variability on `HTML` files
+
