@@ -22,13 +22,17 @@ export class ConditionEvaluator {
 
     /**
      * This function evaluates a given condition expression string against the
-     * given configuretion model.
+     * given configuration model.
      *
-     * @param  conditionExpression condtion expression string
+     * @param  conditionExpression condition expression string
      * @return                     evaluation result
      */
-    public static evaluate(conditionExpression: String): Boolean {
-        // TODO: remove '{' and '}' from the condition expression
+    public static evaluate(conditionExpression): Boolean {
+        console.log(conditionExpression);
+
+        conditionExpression = conditionExpression.replace(/{/g, '');
+        conditionExpression = conditionExpression.replace(/}/g, '');
+        
         let compiledExpression = ConditionEvaluator.parser.parse(conditionExpression);
         return compiledExpression.evaluate(ConditionEvaluator.configurationModel);
     }

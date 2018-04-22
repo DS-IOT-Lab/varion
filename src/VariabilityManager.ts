@@ -16,7 +16,6 @@ export class VariabilityManager {
 
     constructor(rootDirectoryPath: String, targetDirectoryPath: String, configurationPath: String) {
         ConditionEvaluator.init(jsonConfig);
-        console.log(ConditionEvaluator.evaluate('language.english and language.persian'));
         
         this.targetDirectoryPath = targetDirectoryPath;
         this.configurationPath = configurationPath;
