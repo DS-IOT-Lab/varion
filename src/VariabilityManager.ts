@@ -16,7 +16,6 @@ export class VariabilityManager {
 
     constructor(rootDirectoryPath: String, targetDirectoryPath: String, configurationPath: String) {
         ConditionEvaluator.init(jsonConfig);
-        console.log(ConditionEvaluator.evaluate('language.english and language.persian'));
         
         this.targetDirectoryPath = targetDirectoryPath;
         this.configurationPath = configurationPath;
@@ -34,7 +33,7 @@ export class VariabilityManager {
         for (let srcIndex in sourceFiles) {
             let srcFile: SourceFile = sourceFiles[srcIndex];
 
-            console.log("Analyzing " + srcFile.getBaseNameWithoutExtension());
+            console.log("Analyzing " + srcFile.getBaseName());
             VariabilityDetector.analyzeSourceFile(srcFile);
         }
 

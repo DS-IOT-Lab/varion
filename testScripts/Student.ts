@@ -15,33 +15,32 @@ class Student {
     public toString() {
         console.log('Info:\n\t student_number: ' + this.studentNumber + '\n\t name: ' + this.name);
 
-        // @presence gpa and major
+        // @presence {student.education.gpa and student.education.major}
         {
             console.log('\t major: ' + this.major + ', GPA: ' + this.gpa);
         }
 
-        // @presence gpa and not (major)
+        // @presence {student.education.gpa and not (student.education.major)}
         {
             console.log('\t GPA: ' + this.gpa);
         }
 
-        // @presence major and not (gpa)
+        // @presence {student.education.major and not (student.education.gpa)}
         {
             console.log('\t major: ' + this.major);
         }
     }
 
     /**
-     * @presence foo
+     * @presence {student.foo.included}
      */
     public foo() {
-        console.log('Student foo');
         let hiccup = Math.random() * 10;
         let i = 0;
 
         while (i < hiccup) {
 
-            // @presence hiccup
+            // @presence {student.foo.hiccup}
             {
                 let chance = Math.floor(Math.random() * 5);
                 if (chance % 2 == 0) {
@@ -49,38 +48,27 @@ class Student {
                 }
             }
 
-            console.log('Hellowww World !!!');
+            // @presence {student.language.persian}
+            {
+                console.log('Salam!');
+            }
+
+            // @presence {student.language.french}
+            {
+                console.log('Bonjour!');
+            }
+
+            // @presence {student.language.english}
+            {
+                console.log('Hey!');
+            }
+
             i++;
         }
+        
+
     }
-
-    public greetings(peopleNumber: number) {
-        console.log(' Student Greetings');
-        let i = 0;
-
-        do {
-            // @presence language.english
-            {
-                console.log('person #' + i + ': Hello!');
-            }
-
-            // @presence language.persian
-            {
-                console.log('person #' + i + ': Salam!');
-            }
-
-            // @presence language.french
-            {
-                console.log('person #' + i + ': Bonjour!')
-            }
-
-            i++;
-        } while (i < peopleNumber);
-    }
-
 }
 
-let johnWick = new Student('John Wick', 9312430379, 'B.Sc Assassination Engineering', 20.00);
-johnWick.toString();
-johnWick.foo();
-johnWick.greetings(5);
+let john = new Student('John Wick', 9312430379, 'Master of Assassination', 4.00);
+john.foo();

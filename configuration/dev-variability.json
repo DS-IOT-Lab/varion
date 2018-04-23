@@ -1,20 +1,21 @@
 {
-    "gpa": false, 
-    "major": true, 
-    "f1": true, 
-    "g2": false, 
-    "f3": true, 
-    "f4": false, 
-    "f2": true, 
-    "HelloWord1": true, 
-    "HelloWord2": false, 
-    "myVar":false,
-  "foo": true,
-  "bar": true,
-  "hiccup": true,
-  "language": {
-    "persian": false,
-    "english": false,
-    "french": true
+  "Car": {
+    "bonusBoost": true
+  },
+  "student": {
+    "included": true,
+    "education": {
+      "gpa": false,
+      "major": true
+    },
+    "foo": {
+      "included": true,
+      "hiccup": true
+    },
+    "language": {
+      "persian": true,
+      "english": false,
+      "french": false
+    }
   }
 }

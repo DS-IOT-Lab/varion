@@ -1,3 +1,21 @@
 {
-
+    "Car": {
+        "bonusBoost": false
+    },
+    "student": {
+        "included": true,
+        "education": {
+            "gpa": false,
+            "major": true
+        },
+        "foo": {
+            "included": true,
+            "hiccup": true
+        },
+        "language": {
+            "persian": true,
+            "english": false,
+            "french": true
+        }
+    }
 }
