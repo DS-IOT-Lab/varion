@@ -1,6 +1,3 @@
-/**
- * @presence {student.included}
- */
 class Student {
     private name: string;
     private studentNumber: number;
@@ -50,7 +47,7 @@ class Student {
                     console.log('Hic!');
                 }
             }
-            
+
             // @presence {student.language.persian}
             {
                 console.log('Salam!');
@@ -61,7 +58,7 @@ class Student {
                 console.log('Bonjour!');
             }
 
-            //@presence {student.language.english}
+            // @presence {student.language.english}
             {
                 console.log('Hey!');
             }

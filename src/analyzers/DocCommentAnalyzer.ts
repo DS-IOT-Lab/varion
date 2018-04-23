@@ -29,7 +29,7 @@ export class DocCommentAnalyzer {
             if (tagName == 'presence') {
                 let tagComment = currentTag.getComment();
                 let variationResult = ConditionEvaluator.evaluate(tagComment);
-                console.log('presence result = ' + variationResult);
+                console.log('\t\tpresence result = ' + variationResult);
 
                 if (!variationResult) {
                     return false;   // TODO: ask if its ok?!
@@ -42,7 +42,7 @@ export class DocCommentAnalyzer {
 
     public static analyzeSingleLineComment(commentText: string): boolean {
         commentText = commentText.replace(/\//g, '').trim();
-        console.log('single line comment Text -> "' + commentText + '"');
+        console.log('\t\t\t\tsingle line comment Text -> "' + commentText + '"');
 
         let parsedDoc = doctrine.parse(['/**', ' * ' + commentText, '*/'].join('\n'), {unwrap: true});
         for (let i = 0; i < parsedDoc.tags.length; i++) {
@@ -50,7 +50,7 @@ export class DocCommentAnalyzer {
             if(parsedDoc.tags[i].title === 'presence') {
                 let variationResult = ConditionEvaluator.evaluate(parsedDoc.tags[i].description);
 
-                console.log('presence result = ' + variationResult);
+                console.log('\t\t\t\t\tPresence result = ' + variationResult);
 
                 if (!variationResult) {
                     return false;   // TODO: ask if its ok?!

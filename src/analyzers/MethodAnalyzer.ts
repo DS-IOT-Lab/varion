@@ -36,7 +36,7 @@ export class MethodAnalyzer extends Analyzer {
     public analyze(sourceFile: SourceFile,
         node: Node<ts.MethodDeclaration>): boolean {
         let methodDeclaration: MethodDeclaration = node as MethodDeclaration;
-        console.log('Analyzing Method ' + methodDeclaration.getName() + ' ...');
+        console.log('\tAnalyzing Method ' + methodDeclaration.getName() + ' ...');
 
         let jsDocs: JSDoc[] = methodDeclaration.getJsDocs();
         let isIncluded: boolean = true;

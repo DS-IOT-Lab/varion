@@ -33,7 +33,7 @@ export class VariabilityManager {
         for (let srcIndex in sourceFiles) {
             let srcFile: SourceFile = sourceFiles[srcIndex];
 
-            console.log("Analyzing " + srcFile.getBaseNameWithoutExtension());
+            console.log("Analyzing " + srcFile.getBaseName());
             VariabilityDetector.analyzeSourceFile(srcFile);
         }
 

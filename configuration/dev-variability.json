@@ -1,6 +1,6 @@
 {
   "Car": {
-    "bonusBoost": false
+    "bonusBoost": true
   },
   "student": {
     "included": true,

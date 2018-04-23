@@ -28,7 +28,6 @@ export class ConditionEvaluator {
      * @return                     evaluation result
      */
     public static evaluate(conditionExpression): Boolean {
-        console.log(conditionExpression);
 
         conditionExpression = conditionExpression.replace(/{/g, '');
         conditionExpression = conditionExpression.replace(/}/g, '');

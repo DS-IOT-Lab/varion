@@ -83,11 +83,12 @@ export class BlockAnalyzer {
             }
         } else if (!isIncluded) {
             block.remove();
+            sourceFile.emit();
         }
     }
 
     private analyzeIfStatements(sourceFile: SourceFile, ifStatement: IfStatement) {
-        console.log('Analyzing If-Statement ...');
+        console.log('\t\t\tAnalyzing If-Statement ...');
         let blockContents: Block[] = ifStatement.getChildrenOfKind(SyntaxKind.Block);
         let elifContents: IfStatement[] = ifStatement.getChildrenOfKind(SyntaxKind.IfStatement);
 
@@ -101,7 +102,7 @@ export class BlockAnalyzer {
     }
 
     private analyzeWhileStatement(sourceFile: SourceFile, whileStatement: WhileStatement) {
-        console.log('Analyzing While-Statement ...');
+        console.log('\t\t\tAnalyzing While-Statement ...');
         let blockContents: Block[] = whileStatement.getChildrenOfKind(SyntaxKind.Block);
 
         for (let i = 0; i < blockContents.length; i++) {
@@ -110,7 +111,7 @@ export class BlockAnalyzer {
     }
 
     private analyzeDoStatement(sourceFile: SourceFile, doStatement: DoStatement) {
-        console.log('Analyzing Do-Statement ...');
+        console.log('\t\t\tAnalyzing Do-Statement ...');
         let blockContents: Block[] = doStatement.getChildrenOfKind(SyntaxKind.Block);
 
         for (let i = 0; i < blockContents.length; i++) {
@@ -124,7 +125,7 @@ export class BlockAnalyzer {
 
 
     private analyzeLeadingComments(sourceFile: SourceFile, block: Block): boolean {
-        let commentsRange: CommentRange[] = ts.getLeadingCommentRanges(sourceFile.getText(), block.getPos());
+        let commentsRange: CommentRange[] = ts.getLeadingCommentRanges(block.getSourceFile().getText(), block.getFullStart());
 
         if (isUndefined(commentsRange)) {
             return true;
@@ -146,19 +147,7 @@ export class BlockAnalyzer {
                            commentRange: CommentRange) {
 
         let commentText: string = sourceFile.getText().slice(commentRange.pos, commentRange.end);
-
-        console.log('Extracted Comment: ' + commentText); // TODO: parse and check
-
         return DocCommentAnalyzer.analyzeSingleLineComment(commentText);
-
     }
 
-    private parseComment(sourceFile: SourceFile,
-                         block: Block,
-                         commentText: string) {
-
-        commentText = commentText.replace(/\//g, '').trim();
-        console.log('single line comment Text -> "' + commentText + '"');
-        let mixedDoc = ['/**', ' * ' + commentText, '*/'].join('\n');
-    }
 }
