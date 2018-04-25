@@ -11,12 +11,24 @@ import {
     MethodDeclaration,
     Node
 } from "ts-simple-ast";
+
 import {ConditionEvaluator} from '../ConditionEvaluator';
 import {Analyzer} from './Analyzer';
 import * as doctrine from 'doctrine';
 
+/**
+ * [analyzeJsDoc description]
+ * @param  jsDoc [description]
+ * @return       [description]
+ */
 export class DocCommentAnalyzer {
 
+    /**
+     * This function analyzes and evaluates a given JS Document and searches
+     * for the '@presence' tag
+     * @param  jsDoc {JsDoc} given JS document to analyze and evaluate
+     * @return       {boolean} returns the evaluation result
+     */
     public static analyzeJsDoc(jsDoc: JSDoc): boolean {
         let tags = jsDoc.getTags();
 
@@ -40,14 +52,23 @@ export class DocCommentAnalyzer {
         return true;
     }
 
+
+    /**
+     * This function analyzes and evaluates a given single comment and searches
+     * for the '@presence' tag
+     * @param  commentText {string} single comment text
+     * @return             {boolean} return the evaluation result
+     */
     public static analyzeSingleLineComment(commentText: string): boolean {
         commentText = commentText.replace(/\//g, '').trim();
         console.log('\t\t\t\tsingle line comment Text -> "' + commentText + '"');
 
+        // turn the single comment to jsdoc comment and parse using doctrine lib
         let parsedDoc = doctrine.parse(['/**', ' * ' + commentText, '*/'].join('\n'), {unwrap: true});
-        for (let i = 0; i < parsedDoc.tags.length; i++) {
 
-            if(parsedDoc.tags[i].title === 'presence') {
+        // search for '@presence' tag
+        for (let i = 0; i < parsedDoc.tags.length; i++) {
+            if (parsedDoc.tags[i].title === 'presence') {
                 let variationResult = ConditionEvaluator.evaluate(parsedDoc.tags[i].description);
 
                 console.log('\t\t\t\t\tPresence result = ' + variationResult);
@@ -60,4 +81,4 @@ export class DocCommentAnalyzer {
 
         return true;
     }
-} 
+}

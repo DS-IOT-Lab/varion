@@ -31,7 +31,7 @@ export class ConditionEvaluator {
 
         conditionExpression = conditionExpression.replace(/{/g, '');
         conditionExpression = conditionExpression.replace(/}/g, '');
-        
+
         let compiledExpression = ConditionEvaluator.parser.parse(conditionExpression);
         return compiledExpression.evaluate(ConditionEvaluator.configurationModel);
     }

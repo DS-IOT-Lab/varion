@@ -5,7 +5,8 @@
 import Project, {SourceFile} from "ts-simple-ast";
 import {VariabilityDetector} from "./VariabilityDetector";
 import {ConditionEvaluator} from "./ConditionEvaluator";
-var jsonConfig = require('../configuration/dev-variability.json');
+
+var jsonConfig;
 
 export class VariabilityManager {
     private rootDirectoryPath: String;
@@ -14,13 +15,14 @@ export class VariabilityManager {
 
     private project: Project;
 
-    constructor(rootDirectoryPath: String, targetDirectoryPath: String, configurationPath: String) {
+    constructor(rootDirectoryPath: string, targetDirectoryPath: string, configurationPath: string) {
+        jsonConfig = require(configurationPath);
         ConditionEvaluator.init(jsonConfig);
-        
+
         this.targetDirectoryPath = targetDirectoryPath;
         this.configurationPath = configurationPath;
         this.rootDirectoryPath = rootDirectoryPath;
-        
+
         this.project = new Project({compilerOptions: {outDir: targetDirectoryPath.toString()}});
         this.project.addExistingSourceFiles(rootDirectoryPath + "/**/*.ts");
 
@@ -40,5 +42,3 @@ export class VariabilityManager {
         this.project.emit();
     }
 }
-
-let example =  new VariabilityManager('../testScripts', '../dist', '');

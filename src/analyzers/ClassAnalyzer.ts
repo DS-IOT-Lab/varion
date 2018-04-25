@@ -11,12 +11,17 @@ import {
     MethodDeclaration,
     Node
 } from "ts-simple-ast";
-import { ConditionEvaluator } from '../ConditionEvaluator';
-import { Analyzer } from './Analyzer';
-import { MethodAnalyzer } from './MethodAnalyzer';
-import { DocCommentAnalyzer } from './DocCommentAnalyzer';
 
-// singleton
+import {ConditionEvaluator} from '../ConditionEvaluator';
+import {Analyzer} from './Analyzer';
+import {MethodAnalyzer} from './MethodAnalyzer';
+import {DocCommentAnalyzer} from './DocCommentAnalyzer';
+
+
+/**
+ * This class handles the variation point defined inside a class.
+ * NOTE: singleton
+ */
 export class ClassAnalyzer extends Analyzer {
     private methodAnalyzerInstance: MethodAnalyzer;
     private static instance: ClassAnalyzer;
@@ -26,6 +31,10 @@ export class ClassAnalyzer extends Analyzer {
         this.methodAnalyzerInstance = MethodAnalyzer.getInstance();
     }
 
+    /**
+     * This functions return an instance of the class analyzer.
+     * @return {ClassAnalyzer} a ClassAnalyzer object
+     */
     public static getInstance(): ClassAnalyzer {
 
         if (ClassAnalyzer.instance == null) {
@@ -35,8 +44,16 @@ export class ClassAnalyzer extends Analyzer {
         return ClassAnalyzer.instance;
     }
 
+    /**
+     * This method takes a source file as input and a given ClassDeclaration node,
+     * and analyzes it at different levels.
+     *
+     * @param  sourceFile {SourceFile} given source file to analyze
+     * @param  node       {ClassDeclaration} given ClassDeclaration
+     * @return            {boolean} which indicates the class which was analyzed is included or not
+     */
     public analyze(sourceFile: SourceFile,
-        node: Node<ts.ClassDeclaration>): boolean {
+                   node: Node<ts.ClassDeclaration>): boolean {
 
         let classDec: ClassDeclaration;
         classDec = node as ClassDeclaration;
@@ -64,8 +81,15 @@ export class ClassAnalyzer extends Analyzer {
         }
     }
 
+    /**
+     * This method analyzes the methods defined inside a class, and checks the
+     * variation points defined at method level.
+     *
+     * @param  sourceFile       {SourceFile} given source file
+     * @param  classDeclaration {ClassDeclaration} class which contains this method
+     */
     private analyzeClassMethods(sourceFile: SourceFile,
-        classDeclaration: ClassDeclaration) {
+                                classDeclaration: ClassDeclaration) {
 
         let instanceMethods: MethodDeclaration[] = classDeclaration.getInstanceMethods();
         let staticMethods: MethodDeclaration[] = classDeclaration.getStaticMethods();

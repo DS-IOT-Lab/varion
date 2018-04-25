@@ -11,12 +11,16 @@ import {
     MethodDeclaration,
     Node
 } from "ts-simple-ast";
+
 import { ConditionEvaluator } from "../ConditionEvaluator";
 import { Analyzer } from './Analyzer';
 import { DocCommentAnalyzer } from './DocCommentAnalyzer';
 import { BlockAnalyzer } from './BlockAnalyzer';
 
-// singleton 
+/**
+ * This Class checks the variability defined for each method.
+ * NOTE: singleton
+ */
 export class MethodAnalyzer extends Analyzer {
     private static instance: MethodAnalyzer;
 
@@ -25,6 +29,10 @@ export class MethodAnalyzer extends Analyzer {
         super();
     }
 
+    /**
+     * this function returns an instance of the MethodAnalyzer
+     * @return {MethodAnalyzer} MethodAnalyzerObject
+     */
     public static getInstance() {
         if (MethodAnalyzer.instance == null) {
             MethodAnalyzer.instance = new MethodAnalyzer();
@@ -33,6 +41,12 @@ export class MethodAnalyzer extends Analyzer {
         return MethodAnalyzer.instance;
     }
 
+    /**
+     * This method handles variation points set for a method inside a class.
+     * @param  sourceFile [description]
+     * @param  node       [description]
+     * @return            [description]
+     */
     public analyze(sourceFile: SourceFile,
         node: Node<ts.MethodDeclaration>): boolean {
         let methodDeclaration: MethodDeclaration = node as MethodDeclaration;
@@ -50,13 +64,19 @@ export class MethodAnalyzer extends Analyzer {
                 return false;
             }
         }
-
+        
+        // check if method is included
         if (isIncluded) {
             this.checkMethodBody(methodDeclaration);
             return true;
         }
     }
 
+    /**
+     * This method removes the given method from the sourceFile.
+     * @param  sourceFile        {SourceFile} source file which contains the method
+     * @param  methodDeclaration {MethodDeclaration} methodDeclaration node
+     */
     private removeMethod(sourceFile: SourceFile,
         methodDeclaration: MethodDeclaration) {
 
@@ -101,6 +121,10 @@ export class MethodAnalyzer extends Analyzer {
         methodDeclaration.remove();
     }
 
+    /**
+     * This method searches for variation points defined inside a method
+     * @param  methodDeclaration {MethodDeclaration} given mehtod declaration to search inside
+     */
     private checkMethodBody(methodDeclaration: MethodDeclaration) {
         if(methodDeclaration.hasBody()) {
             let block = methodDeclaration.getChildrenOfKind(SyntaxKind.Block)[0];
@@ -109,7 +133,4 @@ export class MethodAnalyzer extends Analyzer {
             blkAnalyzer.analyze(methodDeclaration.getSourceFile(), block as Block);
         }
     }
-
-
-
 }

@@ -38,9 +38,6 @@ Here we have a `TypeScript` file which represents a `Student` class and it has b
 
 
 ```TypeScript
-/**
- * @presence {student.included}
- */
 class Student {
     private name: string;
     private studentNumber: number;
@@ -118,9 +115,6 @@ When we run `Varion` it'll iterate through all the `HTML` and `TypeScript` files
 For example, with the said above configuration our final source file would be:
 
 ```TypeScript
-/**
- * @presence {student.included}
- */
 class Student {
     private name: string;
     private studentNumber: number;
@@ -174,10 +168,6 @@ class Student {
 }
 ```
 
-
-## TODO:
-  - Create a node package which represents our tool
-  - Implement variability appliance on for-statements and switch-statements
-  - run more tests
-  - apply variability on `HTML` files
+### NOTE:
+Some test-case scripts are provided in `testScripts` directory.  
 
