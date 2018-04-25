@@ -1,4 +1,3 @@
-
 import {
     ImportDeclaration,
     SourceFile,
@@ -14,8 +13,9 @@ import {
 } from "ts-simple-ast";
 import {DocCommentAnalyzer} from './DocCommentAnalyzer';
 
-export abstract class Analyzer{
+export abstract class Analyzer {
     protected jsDocAnalyzer: DocCommentAnalyzer;
+
     /**
      * Abstract method which analyzes a given node and then return true or false.
      * {@code False} indicates that the given node is excluded from the final source.

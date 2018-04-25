@@ -39,6 +39,7 @@ export class BlockAnalyzer {
         return false;
     }
 
+
     public traverseBlockContent(sourceFile: SourceFile, node: Node) {
         if (BLOCK_CONTAINING_NODES.indexOf(node.getKind()) != -1) {
 
@@ -87,6 +88,7 @@ export class BlockAnalyzer {
         }
     }
 
+
     private analyzeIfStatements(sourceFile: SourceFile, ifStatement: IfStatement) {
         console.log('\t\t\tAnalyzing If-Statement ...');
         let blockContents: Block[] = ifStatement.getChildrenOfKind(SyntaxKind.Block);
@@ -101,6 +103,7 @@ export class BlockAnalyzer {
         }
     }
 
+
     private analyzeWhileStatement(sourceFile: SourceFile, whileStatement: WhileStatement) {
         console.log('\t\t\tAnalyzing While-Statement ...');
         let blockContents: Block[] = whileStatement.getChildrenOfKind(SyntaxKind.Block);
@@ -109,6 +112,7 @@ export class BlockAnalyzer {
             this.traverseBlockContent(sourceFile, blockContents[i]);
         }
     }
+
 
     private analyzeDoStatement(sourceFile: SourceFile, doStatement: DoStatement) {
         console.log('\t\t\tAnalyzing Do-Statement ...');
@@ -119,8 +123,20 @@ export class BlockAnalyzer {
         }
     }
 
+
+    private analyzeSwitchStatement(sourceFile: SourceFile, swtichStatement: SwitchStatement) {
+        console.log('\t\t\tAnalyzing Switch-Statement ...');
+        //TODO: implement...
+    }
+
+
     private analyzeForStatement(sourceFile: SourceFile, forStatement: ForStatement) {
-        //TODO: implement
+        console.log('\t\t\tAnalyzing For-Statement ...');
+        let blockContents: Block[] = forStatement.getChildrenOfKind(SyntaxKind.Block);
+
+        for (let i = 0; i < blockContents.length; i++) {
+            this.traverseBlockContent(sourceFile, blockContents[i]);
+        }
     }
 
 
@@ -141,6 +157,7 @@ export class BlockAnalyzer {
 
         return true;
     }
+
 
     private extractComment(sourceFile: SourceFile,
                            block: Block,

@@ -19,7 +19,7 @@ import {ClassAnalyzer} from './analyzers/ClassAnalyzer';
 
 
 export class VariabilityDetector {
-    
+
     public static analyzeSourceFile(sourceFile: SourceFile) {
         VariabilityDetector.analyzeClassDeclaration(sourceFile);
         // TODO: analyzeJsDoc imports
@@ -32,10 +32,22 @@ export class VariabilityDetector {
         // TODO: implement
     }
 
+    private static analyzeModuleDeclaration(sourceFile: SourceFile) {
+        // TODO: implement
+    }
+
+    private static analyzeEnumDeclaration(sourceFile: SourceFile) {
+        // TODO: implement
+    }
+
+    private static analyzeInterfaceDeclaration(sourceFile: SourceFile) {
+        // TODO: implement 
+    }
+
     private static analyzeClassDeclaration(sourceFile: SourceFile) {
         let classes: ClassDeclaration[] = sourceFile.getChildren()[0].getChildrenOfKind(SyntaxKind.ClassDeclaration);
         let clsAnalyzer: ClassAnalyzer = ClassAnalyzer.getInstance();
-        
+
         // iterating classes declared inside each source file
         for (let i = 0; i < classes.length; i++) {
             let classDec: ClassDeclaration = classes[i];
