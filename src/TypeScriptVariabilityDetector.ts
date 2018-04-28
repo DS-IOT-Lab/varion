@@ -15,13 +15,12 @@ import {
     Node
 } from "ts-simple-ast";
 import {ConditionEvaluator} from "./ConditionEvaluator";
-import {ClassAnalyzer} from './analyzers/ClassAnalyzer';
+import {ClassAnalyzer} from './typeScriptAnalyzers/ClassAnalyzer';
 
-
-export class VariabilityDetector {
+export class TypeScriptVariabilityDetector {
 
     public static analyzeSourceFile(sourceFile: SourceFile) {
-        VariabilityDetector.analyzeClassDeclaration(sourceFile);
+        TypeScriptVariabilityDetector.analyzeClassDeclaration(sourceFile);
         // TODO: analyzeJsDoc imports
         // TODO: analyzeJsDoc modules
         // TODO: analyzeJsDoc enums

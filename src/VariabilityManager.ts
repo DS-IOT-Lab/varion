@@ -2,9 +2,9 @@
  * Created by navid on 4/7/18.
  */
 
-import Project, {SourceFile} from "ts-simple-ast";
-import {VariabilityDetector} from "./VariabilityDetector";
-import {ConditionEvaluator} from "./ConditionEvaluator";
+import Project, { SourceFile } from "ts-simple-ast";
+import { TypeScriptVariabilityDetector } from "./TypeScriptVariabilityDetector";
+import { ConditionEvaluator } from "./ConditionEvaluator";
 
 var jsonConfig;
 
@@ -23,8 +23,9 @@ export class VariabilityManager {
         this.configurationPath = configurationPath;
         this.rootDirectoryPath = rootDirectoryPath;
 
-        this.project = new Project({compilerOptions: {outDir: targetDirectoryPath.toString()}});
+        this.project = new Project({ compilerOptions: { outDir: targetDirectoryPath.toString() } });
         this.project.addExistingSourceFiles(rootDirectoryPath + "/**/*.ts");
+        this.project.addExistingSourceFiles(rootDirectoryPath + '/**/*.html');
 
         this.init();
     }
@@ -34,11 +35,15 @@ export class VariabilityManager {
 
         for (let srcIndex in sourceFiles) {
             let srcFile: SourceFile = sourceFiles[srcIndex];
-
             console.log("Analyzing " + srcFile.getBaseName());
-            VariabilityDetector.analyzeSourceFile(srcFile);
+            console.log(srcFile.getExtension())
+            
+            if (srcFile.getExtension() == '.ts') {
+                TypeScriptVariabilityDetector.analyzeSourceFile(srcFile);
+            } else if (srcFile.getExtension() == '.html') {
+                console.log("Analyzing html!");
+            }
         }
-
         this.project.emit();
     }
 }
