@@ -22,10 +22,10 @@ export class VariabilityManager {
         this.targetDirectoryPath = targetDirectoryPath;
         this.configurationPath = configurationPath;
         this.rootDirectoryPath = rootDirectoryPath;
-
+        console.log('@@@@@@@@@@@');
         this.project = new Project({ compilerOptions: { outDir: targetDirectoryPath.toString() } });
         this.project.addExistingSourceFiles(rootDirectoryPath + "/**/*.ts");
-        this.project.addExistingSourceFiles(rootDirectoryPath + '/**/*.html');
+        console.log('@@@@@@@@@@@');
 
         this.init();
     }
@@ -36,14 +36,19 @@ export class VariabilityManager {
         for (let srcIndex in sourceFiles) {
             let srcFile: SourceFile = sourceFiles[srcIndex];
             console.log("Analyzing " + srcFile.getBaseName());
-            console.log(srcFile.getExtension())
+            console.log(srcFile.getExtension());
             
             if (srcFile.getExtension() == '.ts') {
                 TypeScriptVariabilityDetector.analyzeSourceFile(srcFile);
+                
             } else if (srcFile.getExtension() == '.html') {
-                console.log("Analyzing html!");
+                srcFile.removeText(0, srcFile.getEnd());
             }
         }
-        this.project.emit();
+        
+        const srcDir = this.project.getDirectoryOrThrow(this.rootDirectoryPath.toString());
+        // need to specify false here to prevent it from including other files in the directory
+        const newDir = srcDir.copy(this.targetDirectoryPath.toString(), { includeUntrackedFiles: false });
+        newDir.save();
     }
 }

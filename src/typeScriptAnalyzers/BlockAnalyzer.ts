@@ -84,7 +84,6 @@ export class BlockAnalyzer {
             }
         } else if (!isIncluded) {
             block.remove();
-            sourceFile.emit();
         }
     }
 

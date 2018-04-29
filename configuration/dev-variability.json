@@ -14,8 +14,8 @@
     },
     "language": {
       "persian": true,
-      "english": false,
-      "french": false
+      "english": true,
+      "french": true
     }
   }
 }

@@ -16,6 +16,6 @@
   },
   "devDependencies": {
     "doctrine": "2.1.0",
-    "ts-simple-ast": "8.2.1"
+    "ts-simple-ast": "11.0.0"
   }
 }
