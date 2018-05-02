@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "clean": "./cleanJSFiles.sh"
+    "clean": "./cleanJSFiles.sh",
+    "demo": "./demo.sh"
   },
   "author": "Navud",
   "license": "ISC",
