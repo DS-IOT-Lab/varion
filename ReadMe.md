@@ -11,7 +11,6 @@ Imagine the `JSON` file below describes the user desired configuration model:
 
 ```json
 {
-    ...
     "student": {
         "included": true,
         
@@ -169,5 +168,12 @@ class Student {
 ```
 
 ### NOTE:
-Some test-case scripts are provided in `testScripts` directory.  
+Some test-case scripts are provided in `testScripts` directory. to test our tool follow the instructions below:
 
+> git clone https://github.com/navid9675/varion.git
+
+> cd varion 
+
+> npm install
+
+> npm run demo

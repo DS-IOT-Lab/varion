@@ -40,9 +40,6 @@ export class ConditionEvaluator {
             return res;
         } catch (e) {
             console.log(chalk.red('Error: undefined configuration variable {' + conditionExpression + '}'));
-        } finally {
-            return true;
         }
-        
     }
 }

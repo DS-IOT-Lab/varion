@@ -1,2 +1,3 @@
 import {VariabilityManager} from "./VariabilityManager";
-let example = new VariabilityManager('./src/testScripts', '../dist', '../configuration/dev-variability.json');
+console.log(__dirname + '../testScripts');
+let example = new VariabilityManager( __dirname + '/../testScripts', '../dist', '../configuration/dev-variability.json');

@@ -21,6 +21,7 @@ export class TypeScriptVariabilityDetector {
 
     public static analyzeSourceFile(sourceFile: SourceFile) {
         TypeScriptVariabilityDetector.analyzeClassDeclaration(sourceFile);
+        console.log('heey');
         // TODO: analyzeJsDoc imports
         // TODO: analyzeJsDoc modules
         // TODO: analyzeJsDoc enums
