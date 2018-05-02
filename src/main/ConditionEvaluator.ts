@@ -1,4 +1,5 @@
-var Parser = require('expr-eval').Parser;
+import chalk from 'chalk';
+import {Parser} from 'expr-eval';
 
 
 /**
@@ -23,16 +24,25 @@ export class ConditionEvaluator {
     /**
      * This function evaluates a given condition expression string against the
      * given configuration model.
-     *
+     * NOTE: if the configuration variable is not defined it is evaluated as True.
      * @param  conditionExpression condition expression string
      * @return                     evaluation result
      */
     public static evaluate(conditionExpression): Boolean {
-
+        
         conditionExpression = conditionExpression.replace(/{/g, '');
         conditionExpression = conditionExpression.replace(/}/g, '');
 
         let compiledExpression = ConditionEvaluator.parser.parse(conditionExpression);
-        return compiledExpression.evaluate(ConditionEvaluator.configurationModel);
+        
+        try {
+            let res = compiledExpression.evaluate(ConditionEvaluator.configurationModel);
+            return res;
+        } catch (e) {
+            console.log(chalk.red('Error: undefined configuration variable {' + conditionExpression + '}'));
+        } finally {
+            return true;
+        }
+        
     }
 }
