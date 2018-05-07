@@ -4,7 +4,9 @@
   "description": "TS compiler API test",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "clean": "./cleanJSFiles.sh",
+    "demo": "./demo.sh"
   },
   "author": "Navud",
   "license": "ISC",

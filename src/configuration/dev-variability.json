@@ -13,7 +13,7 @@
       "hiccup": true
     },
     "language": {
-      "persian": true,
+      "persian": false,
       "english": true,
       "french": true
     }
@@ -21,5 +21,6 @@
   "f1": true,
   "f2": false,
   "f6": false,
-  "f9": true
+  "f9": true,
+  "F1": true
 }

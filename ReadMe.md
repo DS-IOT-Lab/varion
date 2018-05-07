@@ -11,7 +11,6 @@ Imagine the `JSON` file below describes the user desired configuration model:
 
 ```json
 {
-    ...
     "student": {
         "included": true,
         
@@ -167,7 +166,3 @@ class Student {
 
 }
 ```
-
-### NOTE:
-Some test-case scripts are provided in `testScripts` directory.  
-
