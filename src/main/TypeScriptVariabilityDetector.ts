@@ -7,6 +7,7 @@ import {
     SyntaxKind,
     Block,
     ClassDeclaration,
+    InterfaceDeclaration,
     ts,
     JSDoc,
     JSDocTag,
@@ -16,16 +17,16 @@ import {
 } from "ts-simple-ast";
 import {ConditionEvaluator} from "./ConditionEvaluator";
 import {ClassAnalyzer} from './typeScriptAnalyzers/ClassAnalyzer';
+import {InterfaceAnalyzer} from './typeScriptAnalyzers/InterfaceAnalyzer';
 
 export class TypeScriptVariabilityDetector {
 
     public static analyzeSourceFile(sourceFile: SourceFile) {
         TypeScriptVariabilityDetector.analyzeClassDeclaration(sourceFile);
-        console.log('heey');
         // TODO: analyzeJsDoc imports
         // TODO: analyzeJsDoc modules
         // TODO: analyzeJsDoc enums
-        // TODO: analyzeJsDoc interfaces
+        TypeScriptVariabilityDetector.analyzeInterfaceDeclaration(sourceFile);
     }
 
     private static analyzeImportDeclaration(sourceFile: SourceFile) {
@@ -41,7 +42,12 @@ export class TypeScriptVariabilityDetector {
     }
 
     private static analyzeInterfaceDeclaration(sourceFile: SourceFile) {
-        // TODO: implement 
+        let interfaces: InterfaceDeclaration[] = sourceFile
+                                                .getChildren()[0]
+                                                .getChildrenOfKind(SyntaxKind.InterfaceDeclaration);
+        let intAnalyzer: InterfaceAnalyzer = InterfaceAnalyzer.getInstance();
+        
+        // iterating interfaces 
     }
 
     private static analyzeClassDeclaration(sourceFile: SourceFile) {

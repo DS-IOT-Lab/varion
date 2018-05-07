@@ -13,7 +13,7 @@
       "hiccup": true
     },
     "language": {
-      "persian": false,
+      "persian": true,
       "english": true,
       "french": true
     }

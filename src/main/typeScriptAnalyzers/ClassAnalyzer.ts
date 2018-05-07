@@ -144,7 +144,7 @@ export class ClassAnalyzer extends Analyzer {
         }
 
         // removing class itself
-        console.log('3) Removing class: ' + classDeclaration.getName());
+        console.log('3- Removing class: ' + classDeclaration.getName());
         classDeclaration.remove();
     }
 

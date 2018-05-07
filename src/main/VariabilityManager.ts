@@ -23,9 +23,7 @@ export class VariabilityManager {
     private project: Project;
 
     constructor(rootDirectoryPath: string, targetDirectoryPath: string, configurationPath: string) {
-        console.log(configurationPath);
         jsonConfig = require(configurationPath);
-        console.log(jsonConfig);
         ConditionEvaluator.init(jsonConfig);
 
         this.targetDirectoryPath = targetDirectoryPath;
