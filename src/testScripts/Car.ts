@@ -35,6 +35,17 @@ class Car {
 
 }
 
+/**
+ * @presence {Car.driverInterfaceEnabled} 
+ */
+interface Driver {
+    name?: string;
+    licenseNumber: number;
+    nickname?: string;
+}
+
+
+
 let Dena = new Car('Iran Khodro', 210, 'White');
 Dena.describe();
 Dena.boost();

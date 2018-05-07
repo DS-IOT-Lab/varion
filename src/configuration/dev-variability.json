@@ -1,6 +1,7 @@
 {
   "Car": {
-    "bonusBoost": true
+    "bonusBoost": true,
+    "driverInterfaceEnabled": true
   },
   "student": {
     "included": true,

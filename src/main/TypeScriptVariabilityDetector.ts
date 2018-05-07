@@ -48,6 +48,10 @@ export class TypeScriptVariabilityDetector {
         let intAnalyzer: InterfaceAnalyzer = InterfaceAnalyzer.getInstance();
         
         // iterating interfaces 
+        for (let i = 0; i < interfaces.length; i++) {
+            let interfaceDec: InterfaceDeclaration = interfaces[i];
+            intAnalyzer.analyze(sourceFile, interfaceDec);
+        }
     }
 
     private static analyzeClassDeclaration(sourceFile: SourceFile) {
