@@ -9,6 +9,7 @@ import { TypeScriptVariabilityDetector } from "./TypeScriptVariabilityDetector";
 import {HTMLVariabilityDetector} from "./HTMLVariabilityDetector";
 import { ConditionEvaluator } from "./ConditionEvaluator";
 import chalk from "chalk";
+import * as path from "path";
 
 
 let htmlDerivedFiles: Array<HtmlSource> = [];
@@ -23,15 +24,19 @@ export class VariabilityManager {
     private project: Project;
 
     constructor(rootDirectoryPath: string, targetDirectoryPath: string, configurationPath: string) {
-        jsonConfig = require(configurationPath);
+        
+        
+        this.targetDirectoryPath = path.resolve(__dirname + targetDirectoryPath);
+        this.configurationPath = path.resolve(__dirname + configurationPath);
+        this.rootDirectoryPath = path.resolve(__dirname + rootDirectoryPath);
+        
+        jsonConfig = require(this.configurationPath.toString());
         ConditionEvaluator.init(jsonConfig);
-
-        this.targetDirectoryPath = targetDirectoryPath;
-        this.configurationPath = configurationPath;
-        this.rootDirectoryPath = rootDirectoryPath;
-        this.project = new Project({ compilerOptions: { outDir: targetDirectoryPath.toString() } });
-        this.project.addExistingSourceFiles(rootDirectoryPath + "/**/*.ts");
-
+        
+        
+        this.project = new Project({ compilerOptions: { outDir: this.targetDirectoryPath.toString() } });
+        this.project.addExistingSourceFiles(this.rootDirectoryPath + "/**/*.ts");
+        
         this.startAnalyzingTypeScripts();
         this.startAnalyzingHTMLFiles();
     }
@@ -74,7 +79,11 @@ export class VariabilityManager {
     private printHtmlFiles() {
         for (let i = 0; i < htmlDerivedFiles.length; i++) {
             console.log(chalk.cyan('HTML file path: ') + htmlDerivedFiles[i].getSourcePath());
+            let pathToSave =  htmlDerivedFiles[i].getSourcePath().replace(that.rootDirectoryPath, that.targetDirectoryPath);
+            console.log(chalk.yellow('New Path: ') + pathToSave);
             console.log(chalk.gray(htmlDerivedFiles[i].getSourceText()));
+            
+            fs.writeFile(pathToSave, htmlDerivedFiles[i].getSourceText(), () => {});
         }
     }
 }
