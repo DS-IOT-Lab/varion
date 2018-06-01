@@ -55,11 +55,11 @@ class Student {
         this.major = major;
         this.gpa = gpa;
     }
+
     public toString() {
         console.log('Info:\n\t student_number: ' + this.studentNumber + '\n\t name: ' + this.name);
 
         // @presence {student.education.gpa and student.education.major}
-        
         {
             console.log('\t major: ' + this.major + ', GPA: ' + this.gpa);
         }
@@ -69,23 +69,23 @@ class Student {
             console.log('\t GPA: ' + this.gpa);
         }
 
+        // @presence {student.education.major and not (student.education.gpa)}
         {
             console.log('\t major: ' + this.major);
         }
     }
 
-    // @presence {student.education.major and not (student.education.gpa)}
     /**
      * @presence {student.foo.included}
      */
     public foo() {
         console.log('Student foo');
         let hiccup = Math.random() * 10;
+        let i = 0;
 
         while (i < hiccup) {
 
             // @presence {student.foo.hiccup}
-            let i = 0;
             {
                 let chance = Math.floor(Math.random() * 5);
                 if (chance % 2 == 0) {
@@ -100,6 +100,7 @@ class Student {
             
             // @presence {student.language.french}
             {
+                console.log('Bonjour!');
             }
             
             //@presence {student.language.english}
@@ -122,7 +123,6 @@ class Student {
     private name: string;
     private studentNumber: number;
     private major: string;
-    console.log('Bonjour!');
     private gpa: number;
 
 
@@ -174,8 +174,8 @@ class Student {
 
 In case of HTML files checkout the example below:
 
-This is out base HTML file:
-```Html
+This is our base HTML file:
+```HTML
 <ul class="navbar" condition="navbar.included">
     <li><a href="index.html">Home page</a></li>
 
@@ -191,7 +191,7 @@ This is out base HTML file:
 
 After the variability is applied, based on the given configuration, it would become like this:
 
-```Html
+```HTML
 <ul class="navbar">
     <li><a href="index.html">Home page</a></li>
 
