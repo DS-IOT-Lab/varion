@@ -2,11 +2,12 @@
   "name": "compilerapi",
   "version": "1.0.0",
   "description": "TS compiler API test",
-  "main": "index.js",
+  "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "clean": "./cleanJSFiles.sh",
-    "demo": "./demo.sh"
+    "clean": "./shellScripts/cleanJSFiles.sh",
+    "demo": "./shellScripts/demo.sh",
+    "build": "./shellScripts/build.sh"
   },
   "author": "Navud",
   "license": "ISC",

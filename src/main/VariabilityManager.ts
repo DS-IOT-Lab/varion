@@ -26,9 +26,9 @@ export class VariabilityManager {
     constructor(rootDirectoryPath: string, targetDirectoryPath: string, configurationPath: string) {
         
         
-        this.targetDirectoryPath = path.resolve(__dirname + targetDirectoryPath);
-        this.configurationPath = path.resolve(__dirname + configurationPath);
-        this.rootDirectoryPath = path.resolve(__dirname + rootDirectoryPath);
+        this.targetDirectoryPath = path.resolve(targetDirectoryPath);
+        this.configurationPath = path.resolve(configurationPath);
+        this.rootDirectoryPath = path.resolve(rootDirectoryPath);
         
         jsonConfig = require(this.configurationPath.toString());
         ConditionEvaluator.init(jsonConfig);

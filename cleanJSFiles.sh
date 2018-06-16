@@ -1,1 +1,0 @@
-find './src/' -name '*.js' -type f -delete
