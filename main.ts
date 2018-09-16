@@ -19,9 +19,9 @@ module.exports = function (sourceDirectory, targetDirectory, configFile, callbac
             reject('one of the given paths is not valid');
             return callback('one of the given paths is not valid');
         } else {
-            sourceDirectory = path.join(__dirname, sourceDirectory);
-            targetDirectory = path.join(__dirname, targetDirectory);
-            configFile = path.join(__dirname, configFile);
+            sourceDirectory = sourceDirectory;
+            targetDirectory = targetDirectory;
+            configFile = configFile;
             
             var varion = new VariabilityManager(sourceDirectory, targetDirectory, configFile);
         }

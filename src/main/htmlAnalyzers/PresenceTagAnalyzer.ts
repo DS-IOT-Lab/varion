@@ -12,14 +12,15 @@ export class HTMLPrseenceTagAnalyzer extends Analyzer {
     }
     
     public analyze(sourceText: string, file): string {
-        this.$ = cheerio.load(sourceText);
         return this.searchForPresenceTags(sourceText, file);
     }
     
 
     private searchForPresenceTags
     (sourceText: string, file) {
-        this.$ = cheerio.load(sourceText);
+        this.$ = cheerio.load(sourceText,  {
+            lowerCaseAttributeNames: false
+        });
         
         // get the html '<presence> ... </presence>' tags
         let presenceTags = this.$('presence');   

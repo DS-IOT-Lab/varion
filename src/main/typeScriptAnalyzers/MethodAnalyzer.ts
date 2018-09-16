@@ -49,26 +49,32 @@ export class MethodAnalyzer extends Analyzer {
      */
     public analyze(sourceFile: SourceFile,
         node: Node<ts.MethodDeclaration>): boolean {
-        let methodDeclaration: MethodDeclaration = node as MethodDeclaration;
-        console.log('\tAnalyzing Method ' + methodDeclaration.getName() + ' ...');
+        try {
+            let methodDeclaration: MethodDeclaration = node as MethodDeclaration;
+            console.log('\tAnalyzing Method ' + methodDeclaration.getName() + ' ...');
 
-        let jsDocs: JSDoc[] = methodDeclaration.getJsDocs();
-        let isIncluded: boolean = true;
+            let jsDocs: JSDoc[] = methodDeclaration.getJsDocs();
+            let isIncluded: boolean = true;
 
-        // inspecting each method's JS-Doc
-        for (let i = 0; i < jsDocs.length; i++) {
-            isIncluded = DocCommentAnalyzer.analyzeJsDoc(jsDocs[i]);
-            if (!isIncluded) {
-                this.removeMethod(sourceFile, methodDeclaration);
-                sourceFile.emit();
-                return false;
+            // inspecting each method's JS-Doc
+            for (let i = 0; i < jsDocs.length; i++) {
+                isIncluded = DocCommentAnalyzer.analyzeJsDoc(jsDocs[i]);
+                if (!isIncluded) {
+                    this.removeMethod(sourceFile, methodDeclaration);
+                    sourceFile.emit();
+                    return false;
+                }
             }
-        }
-        
-        // check if method is included
-        if (isIncluded) {
-            this.checkMethodBody(methodDeclaration);
+
+            // check if method is included
+            if (isIncluded) {
+                this.checkMethodBody(methodDeclaration);
+                return true;
+            }
+        } catch (e) {
+            console.log(e.toString());
             return true;
+
         }
     }
 

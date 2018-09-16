@@ -35,10 +35,12 @@ export class VariabilityManager {
         
         
         this.project = new Project({ compilerOptions: { outDir: this.targetDirectoryPath.toString() } });
-        this.project.addExistingSourceFiles(this.rootDirectoryPath + "/**/*.ts");
-        
-        this.startAnalyzingTypeScripts();
-        this.startAnalyzingHTMLFiles();
+        this.project.addExistingSourceFiles(this.rootDirectoryPath + "/**/*.*");
+
+        // this.startAnalyzingTypeScripts().then((value:any)=>{
+
+            this.startAnalyzingHTMLFiles();
+        // });
     }
 
     private startAnalyzingTypeScripts() {
@@ -56,7 +58,7 @@ export class VariabilityManager {
         const srcDir = this.project.getDirectoryOrThrow(this.rootDirectoryPath.toString());
         // need to specify false here to prevent it from including other files in the directory
         const newDir = srcDir.copy(this.targetDirectoryPath.toString(), { includeUntrackedFiles: false });
-        newDir.save();
+        return newDir.save();
     }
 
     private startAnalyzingHTMLFiles() {
@@ -68,6 +70,8 @@ export class VariabilityManager {
 
         for (let i = 0; i < files.length; i++) {
             let sourceFileText = fs.readFileSync(files[i], 'utf8');
+            let x = files[i];
+
             let derivedSource = HTMLVariabilityDetector.analyzeSourceFile(sourceFileText, files[i]);
 
             htmlDerivedFiles.push(new HtmlSource(files[i], derivedSource));
@@ -83,7 +87,11 @@ export class VariabilityManager {
             console.log(chalk.yellow('New Path: ') + pathToSave);
             console.log(chalk.gray(htmlDerivedFiles[i].getSourceText()));
             
-            fs.writeFile(pathToSave, htmlDerivedFiles[i].getSourceText(), () => {});
+            fs.writeFile(pathToSave, htmlDerivedFiles[i].getSourceText(), (err) => {
+                if(err){
+                    console.error(err);
+                }
+            });
         }
     }
 }
