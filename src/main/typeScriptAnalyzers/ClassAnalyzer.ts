@@ -63,10 +63,6 @@ export class ClassAnalyzer extends Analyzer {
 
         console.log('Analyzing Class ' + classDec.getName() + ' ...');
 
-        if (classDec.getName() == "TrafficBarComponent") {
-            console.log('Sa;am');
-        }
-
         // check whether it requires to remove each class itself or not by inspecting the each JSDoc for the class
         // TODO: ask about how to handle multiple JSDoc containing '@presence'
         for (let j = 0; j < jsDocs.length; j++) {

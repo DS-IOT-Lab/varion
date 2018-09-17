@@ -37,10 +37,9 @@ export class VariabilityManager {
         this.project = new Project({ compilerOptions: { outDir: this.targetDirectoryPath.toString() } });
         this.project.addExistingSourceFiles(this.rootDirectoryPath + "/**/*.*");
 
-        // this.startAnalyzingTypeScripts().then((value:any)=>{
-
+        this.startAnalyzingTypeScripts().then((value:any)=>{
             this.startAnalyzingHTMLFiles();
-        // });
+        });
     }
 
     private startAnalyzingTypeScripts() {
