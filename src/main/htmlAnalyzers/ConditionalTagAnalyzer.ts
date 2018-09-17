@@ -12,7 +12,6 @@ export class HTMLConditionalTagAnalyzer extends Analyzer {
     }
     
     public analyze(sourceText: string, file): string {
-        this.$ = cheerio.load(sourceText);
         return this.searchForTagsWithConditionAttribute(sourceText, file);
     }
     
@@ -27,8 +26,10 @@ export class HTMLConditionalTagAnalyzer extends Analyzer {
      */
     private searchForTagsWithConditionAttribute
     (sourceText: string, file): string {
-        this.$ = cheerio.load(sourceText);
-        
+        this.$ = cheerio.load(sourceText, {
+            lowerCaseAttributeNames: false
+        });
+
         // get the tags containing 'condition' attribute
         let tags = this.$('[condition]');
         

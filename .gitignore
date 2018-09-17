@@ -69,3 +69,6 @@ typings/
 
 .idea/
 src/test.ts
+main.js
+test.js
+
