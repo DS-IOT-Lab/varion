@@ -1,9 +1,6 @@
-import {JSDoc, ts} from "ts-simple-ast";
-import SourceFile = ts.SourceFile;
+import {TypeScriptVariation} from "./typescript/TypeScriptVariation";
 
-
-export interface TypeScriptVariation {
-
+export interface AbstractVariationPointContainer {
     getInternalVariationPoints(): Array<TypeScriptVariation>;
 
     getVariationExpression(): String;
@@ -13,5 +10,9 @@ export interface TypeScriptVariation {
     printInfo(): String;
 
     applyVariation(): boolean;
-}
 
+    setVariationPointState(status: Boolean);
+
+    getVariationPointState(): Boolean;
+
+}
