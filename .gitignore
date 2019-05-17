@@ -72,3 +72,5 @@ src/test.ts
 main.js
 test.js
 
+# linter
+tslint.json
