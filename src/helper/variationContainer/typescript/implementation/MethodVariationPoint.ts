@@ -1,18 +1,19 @@
-import {TypeScriptVariation} from "../TypeScriptVariation";
 import {JSDoc, MethodDeclaration, Node, ParameterDeclaration, SourceFile, ts} from "ts-simple-ast";
 import {DocCommentAnalyzer} from "../../../../main/typeScriptAnalyzers/DocCommentAnalyzer";
+import {AbstractVariationPointContainer} from "../../AbstractVariationPointContainer";
 
 
-export class MethodVariationPoint implements TypeScriptVariation {
+export class MethodVariationPoint implements AbstractVariationPointContainer {
 
     private sourceFile: SourceFile;
     private methodDec: MethodDeclaration;
     private variabilityExp: String = null;
+    private isIncludedInSource: Boolean = true;
     private readonly jsDocs: Array<JSDoc>;
     private readonly methodName: String;
     private readonly parameters: Array<ParameterDeclaration>;
 
-    private internalVariationPoints: Array<TypeScriptVariation>;
+    private internalVariationPoints: Array<AbstractVariationPointContainer>;
 
     constructor(sourceFile: SourceFile, node: Node<ts.MethodDeclaration>) {
         this.sourceFile = sourceFile;
@@ -21,7 +22,7 @@ export class MethodVariationPoint implements TypeScriptVariation {
         this.methodName = this.methodDec.getName();
         this.parameters = this.methodDec.getParameters();
 
-        this.internalVariationPoints = new Array<TypeScriptVariation>();
+        this.internalVariationPoints = new Array<AbstractVariationPointContainer>();
 
         this.extractVariationExpression();
     }
@@ -65,13 +66,21 @@ export class MethodVariationPoint implements TypeScriptVariation {
         return this.methodName;
     }
 
-    getInternalVariationPoints(): Array<TypeScriptVariation> {
+    getInternalVariationPoints(): Array<AbstractVariationPointContainer> {
         return this.internalVariationPoints;
     }
 
     private removeMethodFromSource(): Boolean {
         // TODO:
         return false;
+    }
+
+    getVariationPointState(): Boolean {
+        return this.isIncludedInSource;
+    }
+
+    setVariationPointState(status: Boolean) {
+        this.isIncludedInSource = status;
     }
 
 }

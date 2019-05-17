@@ -1,17 +1,18 @@
-import {TypeScriptVariation} from "../TypeScriptVariation";
 import {ClassDeclaration, JSDoc, Node, SourceFile, ts} from "ts-simple-ast";
 import {DocCommentAnalyzer} from "../../../../main/typeScriptAnalyzers/DocCommentAnalyzer";
+import {AbstractVariationPointContainer} from "../../AbstractVariationPointContainer";
 
 
-export class ClassVariationPoint implements TypeScriptVariation {
+export class ClassVariationPoint implements AbstractVariationPointContainer {
 
     private sourceFile: SourceFile;
     private classDec: ClassDeclaration;
     private variabilityExp: String = null;
+    private isIncludedInSource: Boolean = true;
     private readonly jsDocs: JSDoc[];
     private readonly className: String;
 
-    private internalVariationPoints: TypeScriptVariation[];
+    private internalVariationPoints: Array<AbstractVariationPointContainer>;
 
     constructor(sourceFile: SourceFile, node: Node<ts.ClassDeclaration>) {
         this.sourceFile = sourceFile;
@@ -19,7 +20,7 @@ export class ClassVariationPoint implements TypeScriptVariation {
         this.jsDocs = this.classDec.getJsDocs();
         this.className = this.classDec.getName();
 
-        this.internalVariationPoints = new Array<TypeScriptVariation>();
+        this.internalVariationPoints = new Array<AbstractVariationPointContainer>();
 
         this.extractVariationExpression();
     }
@@ -66,8 +67,16 @@ export class ClassVariationPoint implements TypeScriptVariation {
         return this.className;
     }
 
-    public getInternalVariationPoints(): Array<TypeScriptVariation> {
+    public getInternalVariationPoints(): Array<AbstractVariationPointContainer> {
         return this.internalVariationPoints;
+    }
+
+    setVariationPointState(status: Boolean) {
+        this.isIncludedInSource = true;
+    }
+
+    getVariationPointState(): Boolean {
+        return this.isIncludedInSource;
     }
 
 

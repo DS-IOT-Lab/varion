@@ -1,7 +1,5 @@
-import {TypeScriptVariation} from "./typescript/TypeScriptVariation";
-
 export interface AbstractVariationPointContainer {
-    getInternalVariationPoints(): Array<TypeScriptVariation>;
+    getInternalVariationPoints(): Array<AbstractVariationPointContainer>;
 
     getVariationExpression(): String;
 
