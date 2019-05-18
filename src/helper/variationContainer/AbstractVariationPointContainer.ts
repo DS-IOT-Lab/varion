@@ -15,4 +15,6 @@ export interface AbstractVariationPointContainer {
 
     addToInternalVariationPoint(variationPoint: AbstractVariationPointContainer);
 
+    getVariationPointType(): VariationPointContainerType;
+
 }
