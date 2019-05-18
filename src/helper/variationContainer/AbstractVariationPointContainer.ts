@@ -13,4 +13,6 @@ export interface AbstractVariationPointContainer {
 
     getVariationPointState(): Boolean;
 
+    addToInternalVariationPoint(variationPoint: AbstractVariationPointContainer);
+
 }

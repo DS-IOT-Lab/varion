@@ -22,21 +22,10 @@ export class MethodVariationPoint implements AbstractVariationPointContainer {
         this.methodName = this.methodDec.getName();
         this.parameters = this.methodDec.getParameters();
 
-        this.internalVariationPoints = new Array<AbstractVariationPointContainer>();
+        this.internalVariationPoints = [];
 
         this.extractVariationExpression();
     }
-
-    private extractVariationExpression() {
-        for (let j = 0; j < this.jsDocs.length; j++) {
-            let variabilityExp = DocCommentAnalyzer.extractVariabilityExpression(this.jsDocs[j]);
-            if (variabilityExp != null) {
-                this.variabilityExp = variabilityExp;
-                return variabilityExp;
-            }
-        }
-    }
-
 
     getVariationExpression(): String {
         if (this.variabilityExp != null) {
@@ -62,17 +51,12 @@ export class MethodVariationPoint implements AbstractVariationPointContainer {
         return false;
     }
 
-    getClassName(): String {
+    getMethodName(): String {
         return this.methodName;
     }
 
     getInternalVariationPoints(): Array<AbstractVariationPointContainer> {
         return this.internalVariationPoints;
-    }
-
-    private removeMethodFromSource(): Boolean {
-        // TODO:
-        return false;
     }
 
     getVariationPointState(): Boolean {
@@ -81,6 +65,25 @@ export class MethodVariationPoint implements AbstractVariationPointContainer {
 
     setVariationPointState(status: Boolean) {
         this.isIncludedInSource = status;
+    }
+
+    private extractVariationExpression() {
+        for (let j = 0; j < this.jsDocs.length; j++) {
+            let variabilityExp = DocCommentAnalyzer.extractVariabilityExpression(this.jsDocs[j]);
+            if (variabilityExp != null) {
+                this.variabilityExp = variabilityExp;
+                return variabilityExp;
+            }
+        }
+    }
+
+    private removeMethodFromSource(): Boolean {
+        // TODO:
+        return false;
+    }
+
+    addToInternalVariationPoint(variationPoint: AbstractVariationPointContainer) {
+        this.internalVariationPoints.push(variationPoint);
     }
 
 }

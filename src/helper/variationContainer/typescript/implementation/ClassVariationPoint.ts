@@ -20,19 +20,9 @@ export class ClassVariationPoint implements AbstractVariationPointContainer {
         this.jsDocs = this.classDec.getJsDocs();
         this.className = this.classDec.getName();
 
-        this.internalVariationPoints = new Array<AbstractVariationPointContainer>();
+        this.internalVariationPoints = [];
 
         this.extractVariationExpression();
-    }
-
-    private extractVariationExpression() {
-        for (let j = 0; j < this.jsDocs.length; j++) {
-            let variabilityExp = DocCommentAnalyzer.extractVariabilityExpression(this.jsDocs[j]);
-            if (variabilityExp != null) {
-                this.variabilityExp = variabilityExp;
-                return variabilityExp;
-            }
-        }
     }
 
     getVariationExpression(): String {
@@ -59,10 +49,6 @@ export class ClassVariationPoint implements AbstractVariationPointContainer {
         return false;
     }
 
-    private removeClassFromSource(): boolean {
-        return false;
-    }
-
     public getClassName(): String {
         return this.className;
     }
@@ -77,6 +63,24 @@ export class ClassVariationPoint implements AbstractVariationPointContainer {
 
     getVariationPointState(): Boolean {
         return this.isIncludedInSource;
+    }
+
+    private extractVariationExpression() {
+        for (let j = 0; j < this.jsDocs.length; j++) {
+            let variabilityExp = DocCommentAnalyzer.extractVariabilityExpression(this.jsDocs[j]);
+            if (variabilityExp != null) {
+                this.variabilityExp = variabilityExp;
+                return variabilityExp;
+            }
+        }
+    }
+
+    private removeClassFromSource(): boolean {
+        return false;
+    }
+
+    addToInternalVariationPoint(variationPoint: AbstractVariationPointContainer) {
+        this.internalVariationPoints.push(variationPoint);
     }
 
 
