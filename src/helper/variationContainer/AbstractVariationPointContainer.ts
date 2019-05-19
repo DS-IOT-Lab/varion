@@ -1,3 +1,5 @@
+import {VariationPointContainerType} from "../VariationPointContainerType";
+
 export interface AbstractVariationPointContainer {
     getInternalVariationPoints(): Array<AbstractVariationPointContainer>;
 
@@ -7,7 +9,7 @@ export interface AbstractVariationPointContainer {
 
     printInfo(): String;
 
-    applyVariation(): boolean;
+    applyVariation();
 
     setVariationPointState(status: Boolean);
 
