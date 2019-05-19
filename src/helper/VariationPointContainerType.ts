@@ -1,4 +1,4 @@
-declare enum VariationPointContainerType {
+export enum VariationPointContainerType {
     TS_BLOCK = 1,
     TS_CLASS = 2,
     TS_METHOD = 3,
