@@ -2,11 +2,12 @@ import {AbstractVariationPointContainer} from "../../AbstractVariationPointConta
 import {Block, Node, SourceFile, ts} from "ts-simple-ast";
 import {CommentRange} from 'typescript';
 import {isUndefined} from "util";
-
+import * as doctrine from 'doctrine';
+import {VariationPointContainerType} from "../../../VariationPointContainerType";
 
 export class BlockVariationPoint implements AbstractVariationPointContainer {
     private sourceFile: SourceFile;
-    private block: Node;
+    private block: Block;
     private variabilityExp: String = null;
     private isIncludedInSource: Boolean = true;
     private internalVariationPoints: Array<AbstractVariationPointContainer>;
@@ -19,12 +20,22 @@ export class BlockVariationPoint implements AbstractVariationPointContainer {
         this.extractVariationExpression();
     }
 
-    applyVariation(): boolean {
-        return false;
+    applyVariation() {
+        if (!this.isIncludedInSource) {
+            this.block.remove();
+            return;
+        } else {
+            if (this.internalVariationPoints.length > 0) {
+                for (let internalVariationPointIndex in this.internalVariationPoints) {
+                    let internalVariationPoint = this.internalVariationPoints[internalVariationPointIndex];
+                    internalVariationPoint.applyVariation();
+                }
+            }
+        }
     }
 
     getInternalVariationPoints(): Array<AbstractVariationPointContainer> {
-        return undefined;
+        return this.internalVariationPoints;
     }
 
     getVariationExpression(): String {
@@ -32,18 +43,27 @@ export class BlockVariationPoint implements AbstractVariationPointContainer {
     }
 
     getVariationPointState(): Boolean {
-        return false;
+        return this.isIncludedInSource;
+    }
+
+    setVariationPointState(status: Boolean) {
+        this.isIncludedInSource = status;
     }
 
     printInfo(): String {
         return "";
     }
 
-    setVariationPointState(status: Boolean) {
-    }
-
     variationExpressionContains(conditionExpression: String): boolean {
         return false;
+    }
+
+    addToInternalVariationPoints(variationPoint: AbstractVariationPointContainer) {
+        this.internalVariationPoints.push(variationPoint);
+    }
+
+    getVariationPointType(): VariationPointContainerType {
+        return VariationPointContainerType.TS_BLOCK;
     }
 
     private extractVariationExpression(): String {
@@ -54,18 +74,26 @@ export class BlockVariationPoint implements AbstractVariationPointContainer {
         }
 
         for (let i = 0; i < commentsRange.length; i++) {
-            let comment = this.sourceFile.getText().slice(commentsRange[i].pos, commentsRange[i].end);
-            if (comment.indexOf('@presence') >= 0) {
-                this.variabilityExp = comment;
-                return comment;
+
+            // NOTE: `rawComment` contains leading double slashes `//` and we have to remove them
+            let rawComment = this.sourceFile.getText().slice(commentsRange[i].pos, commentsRange[i].end);
+            if (rawComment.indexOf('@presence') >= 0) {
+                let commentText = rawComment.replace(/\//g, '').trim();
+
+                // turn the single rawComment to jsdoc rawComment and parse using doctrine lib
+                let parsedDoc = doctrine.parse(['/**', ' * ' + commentText, '*/'].join('\n'), {unwrap: true});
+
+                for (let i = 0; i < parsedDoc.tags.length; i++) {
+                    if (parsedDoc.tags[i].title === 'presence') {
+                        this.variabilityExp = parsedDoc.tags[i].description;
+                    }
+                }
+
+                return commentText;
             }
         }
 
         return null;
-    }
-
-    addToInternalVariationPoint(variationPoint: AbstractVariationPointContainer) {
-        this.internalVariationPoints.push(variationPoint);
     }
 
 }
