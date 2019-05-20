@@ -1,6 +1,7 @@
-import {JSDoc, MethodDeclaration, Node, ParameterDeclaration, SourceFile, ts} from "ts-simple-ast";
+import {Decorator, JSDoc, MethodDeclaration, Node, ParameterDeclaration, SourceFile, ts} from "ts-simple-ast";
 import {DocCommentAnalyzer} from "../../../../main/typeScriptAnalyzers/DocCommentAnalyzer";
 import {AbstractVariationPointContainer} from "../../AbstractVariationPointContainer";
+import {VariationPointContainerType} from "../../../VariationPointContainerType";
 
 
 export class MethodVariationPoint implements AbstractVariationPointContainer {
@@ -47,8 +48,18 @@ export class MethodVariationPoint implements AbstractVariationPointContainer {
         return this.jsDocs;
     }
 
-    applyVariation(): boolean {
-        return false;
+    applyVariation() {
+        if (!this.isIncludedInSource) {
+            this.removeMethodFromSource();
+            return;
+        } else {
+            if (this.internalVariationPoints.length > 0) {
+                for (let internalVariationPointIndex in this.internalVariationPoints) {
+                    let internalVariationPoint = this.internalVariationPoints[internalVariationPointIndex];
+                    internalVariationPoint.applyVariation();
+                }
+            }
+        }
     }
 
     getMethodName(): String {
@@ -67,6 +78,36 @@ export class MethodVariationPoint implements AbstractVariationPointContainer {
         this.isIncludedInSource = status;
     }
 
+    removeMethodFromSource() {
+
+        // getting and removing method decorators
+        let methodDecorators: Decorator[] = this.methodDec.getDecorators();
+        for (let i = 0; i < methodDecorators.length; i++) {
+            methodDecorators[i].remove();
+        }
+
+        // getting and removing method JSDocs
+        let jsDocs: JSDoc[] = this.methodDec.getJsDocs();
+        for (let i = 0; i < jsDocs.length; i++) {
+
+            jsDocs[i].remove();
+        }
+
+        // removing method itself
+        this.methodDec.remove();
+
+        // emit changes to the source file
+        this.sourceFile.emit();
+    }
+
+    public addToInternalVariationPoints(variationPoint: AbstractVariationPointContainer) {
+        this.internalVariationPoints.push(variationPoint);
+    }
+
+    getVariationPointType(): VariationPointContainerType {
+        return VariationPointContainerType.TS_METHOD;
+    }
+
     private extractVariationExpression() {
         for (let j = 0; j < this.jsDocs.length; j++) {
             let variabilityExp = DocCommentAnalyzer.extractVariabilityExpression(this.jsDocs[j]);
@@ -75,15 +116,6 @@ export class MethodVariationPoint implements AbstractVariationPointContainer {
                 return variabilityExp;
             }
         }
-    }
-
-    private removeMethodFromSource(): Boolean {
-        // TODO:
-        return false;
-    }
-
-    addToInternalVariationPoint(variationPoint: AbstractVariationPointContainer) {
-        this.internalVariationPoints.push(variationPoint);
     }
 
 }

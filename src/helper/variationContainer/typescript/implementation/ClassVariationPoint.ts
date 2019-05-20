@@ -1,6 +1,7 @@
-import {ClassDeclaration, JSDoc, Node, SourceFile, ts} from "ts-simple-ast";
+import {ClassDeclaration, Decorator, JSDoc, Node, SourceFile, ts} from "ts-simple-ast";
 import {DocCommentAnalyzer} from "../../../../main/typeScriptAnalyzers/DocCommentAnalyzer";
 import {AbstractVariationPointContainer} from "../../AbstractVariationPointContainer";
+import {VariationPointContainerType} from "../../../VariationPointContainerType";
 
 
 export class ClassVariationPoint implements AbstractVariationPointContainer {
@@ -45,8 +46,18 @@ export class ClassVariationPoint implements AbstractVariationPointContainer {
         return this.jsDocs;
     }
 
-    public applyVariation(): boolean {
-        return false;
+    public applyVariation() {
+        if (!this.isIncludedInSource) {
+            this.removeClassFromSource();
+            return;
+        } else {
+            if (this.internalVariationPoints.length > 0) {
+                for (let internalVariationPointIndex in this.internalVariationPoints) {
+                    let internalVariationPoint = this.internalVariationPoints[internalVariationPointIndex];
+                    internalVariationPoint.applyVariation();
+                }
+            }
+        }
     }
 
     public getClassName(): String {
@@ -75,12 +86,35 @@ export class ClassVariationPoint implements AbstractVariationPointContainer {
         }
     }
 
-    private removeClassFromSource(): boolean {
-        return false;
+    private removeClassFromSource() {
+
+        // get class decorators
+        let classDecorators: Decorator[] = this.classDec.getDecorators();
+
+        // removing decorators
+        for (let i = 0; i < classDecorators.length; i++) {
+            classDecorators[i].remove();
+        }
+
+        //removing JSDocs
+        let jsDocs = this.classDec.getJsDocs();
+        for (let i = 0; i < jsDocs.length; i++) {
+            jsDocs[i].remove();
+        }
+
+        // removing class itself
+        this.classDec.remove();
+
+        // emit changes
+        this.sourceFile.emit();
     }
 
-    addToInternalVariationPoint(variationPoint: AbstractVariationPointContainer) {
+    addToInternalVariationPoints(variationPoint: AbstractVariationPointContainer) {
         this.internalVariationPoints.push(variationPoint);
+    }
+
+    getVariationPointType(): VariationPointContainerType {
+        return VariationPointContainerType.TS_CLASS;
     }
 
 
