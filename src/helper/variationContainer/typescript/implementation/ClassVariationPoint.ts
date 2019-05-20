@@ -2,6 +2,7 @@ import {ClassDeclaration, Decorator, JSDoc, Node, SourceFile, ts} from "ts-simpl
 import {DocCommentAnalyzer} from "../../../../main/typeScriptAnalyzers/DocCommentAnalyzer";
 import {AbstractVariationPointContainer} from "../../AbstractVariationPointContainer";
 import {VariationPointContainerType} from "../../../VariationPointContainerType";
+import {VariationPointStatus} from "../../../VariationPointStatus";
 
 
 export class ClassVariationPoint implements AbstractVariationPointContainer {
@@ -9,7 +10,7 @@ export class ClassVariationPoint implements AbstractVariationPointContainer {
     private sourceFile: SourceFile;
     private classDec: ClassDeclaration;
     private variabilityExp: String = null;
-    private isIncludedInSource: Boolean = true;
+    private variationPointStatus: VariationPointStatus;
     private readonly jsDocs: JSDoc[];
     private readonly className: String;
 
@@ -20,7 +21,7 @@ export class ClassVariationPoint implements AbstractVariationPointContainer {
         this.classDec = node as ClassDeclaration;
         this.jsDocs = this.classDec.getJsDocs();
         this.className = this.classDec.getName();
-
+        this.variationPointStatus = VariationPointStatus.UNDEFINED;
         this.internalVariationPoints = [];
 
         this.extractVariationExpression();
@@ -47,7 +48,7 @@ export class ClassVariationPoint implements AbstractVariationPointContainer {
     }
 
     public applyVariation() {
-        if (!this.isIncludedInSource) {
+        if (this.variationPointStatus == VariationPointStatus.NOT_INCLUDED) {
             this.removeClassFromSource();
             return;
         } else {
@@ -68,12 +69,12 @@ export class ClassVariationPoint implements AbstractVariationPointContainer {
         return this.internalVariationPoints;
     }
 
-    setVariationPointState(status: Boolean) {
-        this.isIncludedInSource = true;
+    setVariationPointState(status: VariationPointStatus) {
+        this.variationPointStatus = status;
     }
 
-    getVariationPointState(): Boolean {
-        return this.isIncludedInSource;
+    getVariationPointState(): VariationPointStatus {
+        return this.variationPointStatus;
     }
 
     private extractVariationExpression() {
