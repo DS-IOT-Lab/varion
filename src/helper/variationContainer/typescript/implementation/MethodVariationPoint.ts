@@ -2,6 +2,7 @@ import {Decorator, JSDoc, MethodDeclaration, Node, ParameterDeclaration, SourceF
 import {DocCommentAnalyzer} from "../../../../main/typeScriptAnalyzers/DocCommentAnalyzer";
 import {AbstractVariationPointContainer} from "../../AbstractVariationPointContainer";
 import {VariationPointContainerType} from "../../../VariationPointContainerType";
+import {VariationPointStatus} from "../../../VariationPointStatus";
 
 
 export class MethodVariationPoint implements AbstractVariationPointContainer {
@@ -9,7 +10,7 @@ export class MethodVariationPoint implements AbstractVariationPointContainer {
     private sourceFile: SourceFile;
     private methodDec: MethodDeclaration;
     private variabilityExp: String = null;
-    private isIncludedInSource: Boolean = true;
+    private variationPointStatus: VariationPointStatus;
     private readonly jsDocs: Array<JSDoc>;
     private readonly methodName: String;
     private readonly parameters: Array<ParameterDeclaration>;
@@ -22,7 +23,7 @@ export class MethodVariationPoint implements AbstractVariationPointContainer {
         this.jsDocs = this.methodDec.getJsDocs();
         this.methodName = this.methodDec.getName();
         this.parameters = this.methodDec.getParameters();
-
+        this.variationPointStatus = VariationPointStatus.UNDEFINED;
         this.internalVariationPoints = [];
 
         this.extractVariationExpression();
@@ -49,7 +50,7 @@ export class MethodVariationPoint implements AbstractVariationPointContainer {
     }
 
     applyVariation() {
-        if (!this.isIncludedInSource) {
+        if (this.variationPointStatus == VariationPointStatus.NOT_INCLUDED) {
             this.removeMethodFromSource();
             return;
         } else {
@@ -70,12 +71,12 @@ export class MethodVariationPoint implements AbstractVariationPointContainer {
         return this.internalVariationPoints;
     }
 
-    getVariationPointState(): Boolean {
-        return this.isIncludedInSource;
+    getVariationPointState(): VariationPointStatus {
+        return this.variationPointStatus;
     }
 
-    setVariationPointState(status: Boolean) {
-        this.isIncludedInSource = status;
+    setVariationPointState(status: VariationPointStatus) {
+        this.variationPointStatus = status;
     }
 
     removeMethodFromSource() {

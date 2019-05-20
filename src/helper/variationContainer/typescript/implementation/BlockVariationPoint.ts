@@ -4,24 +4,26 @@ import {CommentRange} from 'typescript';
 import {isUndefined} from "util";
 import * as doctrine from 'doctrine';
 import {VariationPointContainerType} from "../../../VariationPointContainerType";
+import {VariationPointStatus} from "../../../VariationPointStatus";
 
 export class BlockVariationPoint implements AbstractVariationPointContainer {
     private sourceFile: SourceFile;
     private block: Block;
     private variabilityExp: String = null;
-    private isIncludedInSource: Boolean = true;
+    private variationPointStatus: VariationPointStatus;
     private internalVariationPoints: Array<AbstractVariationPointContainer>;
 
     constructor(sourceFile: SourceFile, node: Node<ts.Block>) {
         this.sourceFile = sourceFile;
         this.block = node as Block;
         this.internalVariationPoints = [];
+        this.variationPointStatus = VariationPointStatus.UNDEFINED;
 
         this.extractVariationExpression();
     }
 
     applyVariation() {
-        if (!this.isIncludedInSource) {
+        if (this.variationPointStatus == VariationPointStatus.NOT_INCLUDED) {
             this.block.remove();
             return;
         } else {
@@ -42,12 +44,12 @@ export class BlockVariationPoint implements AbstractVariationPointContainer {
         return "";
     }
 
-    getVariationPointState(): Boolean {
-        return this.isIncludedInSource;
+    getVariationPointState(): VariationPointStatus {
+        return this.variationPointStatus;
     }
 
-    setVariationPointState(status: Boolean) {
-        this.isIncludedInSource = status;
+    setVariationPointState(status: VariationPointStatus) {
+        this.variationPointStatus = status;
     }
 
     printInfo(): String {
