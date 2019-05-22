@@ -34,6 +34,7 @@ export class BlockVariationPoint implements AbstractVariationPointContainer {
                 }
             }
         }
+
     }
 
     getInternalVariationPoints(): Array<AbstractVariationPointContainer> {
@@ -41,7 +42,7 @@ export class BlockVariationPoint implements AbstractVariationPointContainer {
     }
 
     getVariationExpression(): String {
-        return "";
+        return this.variabilityExp;
     }
 
     getVariationPointState(): VariationPointStatus {
