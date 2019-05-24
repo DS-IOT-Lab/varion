@@ -4,10 +4,12 @@ import * as fs from 'fs';
 import {TypeScriptVariabilityDetector} from "./TypeScriptVariabilityDetector";
 import {HTMLVariabilityDetector} from "./HTMLVariabilityDetector";
 import {ConditionEvaluator} from "./ConditionEvaluator";
+import chalk from "chalk";
 import * as path from "path";
 import {SourcePathToVariationPointsMap} from "../helper/SourcePathToVariationPointsMap";
 import {AbstractVariationPointContainer} from "../helper/variationContainer/AbstractVariationPointContainer";
 import {sprintf} from "sprintf-js";
+import {VariationPointStatus} from "../helper/VariationPointStatus";
 import {SourcePathToHtmlVariationPointsMap} from "../helper/SourcePathToHtmlVariationPointsMap";
 import {HtmlVariationPoint} from "../helper/variationContainer/html/implementation/HtmlVariationPoint";
 import {VariationPointContainerType} from "../helper/VariationPointContainerType";
@@ -21,12 +23,11 @@ export class VariabilityManager {
     private configurationPath: String;
     private sourceToVariationPointMap: SourcePathToVariationPointsMap = {};
 
-    // maps source file path of html files to HtmlVariationPoint
-    // although `sourceToVariationPointMap` contains these files as well,
-    // but for the sake of simplicity for applying variation points I thought
-    // it's better to have in another place as well
+    /* maps source file path of html files to HtmlVariationPoint
+    although `sourceToVariationPointMap` contains these files as well,
+    but for the sake of simplicity for applying variation points I thought
+    it's better to have in another place as well */
     private sourceToHtmlVps: SourcePathToHtmlVariationPointsMap = {};
-
     private project: Project;
 
     constructor(rootDirectoryPath: string, targetDirectoryPath: string, configurationPath: string) {
@@ -48,6 +49,18 @@ export class VariabilityManager {
 
     public getSourceToVariationPointsMap(): SourcePathToVariationPointsMap {
         return this.sourceToVariationPointMap;
+    }
+
+    public checkConfigCoverage() {
+        for (let sourceFilePath in this.sourceToVariationPointMap) {
+            let variationPointsList: Array<AbstractVariationPointContainer> = this.sourceToVariationPointMap[sourceFilePath];
+            console.log(chalk.blue("[" + sourceFilePath + "]:"));
+
+            for (let index in variationPointsList) {
+                let variationPointItem = variationPointsList[index];
+                this.printInternalVariationPointsStatus(variationPointItem);
+            }
+        }
     }
 
     public applyVariabilities() {
@@ -84,9 +97,37 @@ export class VariabilityManager {
 
             this.printHtmlFiles(derivedHtml, sourceFilePath);
         }
-
-
         return;
+    }
+
+    private printInternalVariationPointsStatus(variationPointContainer: AbstractVariationPointContainer) {
+        if (variationPointContainer.getVariationExpression() != null) {
+
+            switch (variationPointContainer.getVariationPointState()) {
+                case VariationPointStatus.INCLUDED:
+                    console.log(variationPointContainer.getVariationExpression()
+                        + chalk.green("\tINCLUDED"));
+                    break;
+
+                case VariationPointStatus.UNDEFINED:
+                    console.log(variationPointContainer.getVariationExpression()
+                        + chalk.yellow("\tUNDEFINED"));
+                    break;
+
+                case VariationPointStatus.NOT_INCLUDED:
+                    console.log(variationPointContainer.getVariationExpression()
+                        + chalk.red("\tNOT INCLUDED"));
+                    break;
+            }
+        }
+
+        let internalVariationPoints = variationPointContainer.getInternalVariationPoints();
+        if (internalVariationPoints !== null && internalVariationPoints.length > 0) {
+            for (let internalVariationPointItemIndex in internalVariationPoints) {
+                let nextVariationPoint = internalVariationPoints[internalVariationPointItemIndex];
+                this.printInternalVariationPointsStatus(nextVariationPoint);
+            }
+        }
     }
 
     private startAnalyzingTypeScripts() {
@@ -94,7 +135,6 @@ export class VariabilityManager {
 
         for (let srcIndex in sourceFiles) {
             let srcFile: SourceFile = sourceFiles[srcIndex];
-
             if (srcFile.getExtension() == '.ts') {
                 let tsVariationPoints = TypeScriptVariabilityDetector.analyzeSourceFile(srcFile);
                 this.sourceToVariationPointMap[srcFile.getFilePath()] = tsVariationPoints;
@@ -106,7 +146,6 @@ export class VariabilityManager {
         that = this;
         try {
             let files = glob.sync(this.rootDirectoryPath + '/**/*.html');
-
             for (let i = 0; i < files.length; i++) {
                 let sourceFileText = fs.readFileSync(files[i], 'utf8');
 
@@ -114,7 +153,6 @@ export class VariabilityManager {
                 that.sourceToVariationPointMap[files[i]] = variationPoints;
                 this.sourceToHtmlVps[files[i]] = variationPoints;
             }
-
         } catch (e) {
             console.error(e);
         }
@@ -122,10 +160,10 @@ export class VariabilityManager {
     }
 
     private printHtmlFiles(finalHtmlContent, sourceFilePath) {
-
         let pathToSave = sourceFilePath.replace(that.rootDirectoryPath, that.targetDirectoryPath);
-
         fs.writeFileSync(pathToSave, finalHtmlContent, {flag: 'w'});
     }
 
 }
+
+
