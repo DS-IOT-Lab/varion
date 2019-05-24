@@ -21,7 +21,7 @@ function variability(sourceDirectory, targetDirectory, configFile) {
             configFile = configFile;
 
             let varion = new VariabilityManager(sourceDirectory, targetDirectory, configFile);
-            
+
             varion.applyVariabilities();
         }
 }

@@ -20,6 +20,7 @@
   },
   "devDependencies": {
     "doctrine": "2.1.0",
-    "ts-simple-ast": "11.0.0"
+    "ts-simple-ast": "11.0.0",
+    "tslint": "^5.16.0"
   }
 }
