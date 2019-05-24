@@ -1,34 +1,21 @@
-import * as cheerio from 'cheerio';
-import {
-    ImportDeclaration,
-    SourceFile,
-    SyntaxKind,
-    Block,
-    ClassDeclaration,
-    ts,
-    JSDoc,
-    JSDocTag,
-    Decorator,
-    MethodDeclaration,
-    Node
-} from "ts-simple-ast";
-import {ConditionEvaluator} from './ConditionEvaluator';
-import {HTMLPrseenceTagAnalyzer} from './htmlAnalyzers/PresenceTagAnalyzer';
+import {HTMLPresenceTagAnalyzer} from './htmlAnalyzers/PresenceTagAnalyzer';
 import {HTMLConditionalTagAnalyzer} from './htmlAnalyzers/ConditionalTagAnalyzer';
-
-import * as fs from "fs";
-import chalk from "chalk";
-import {isUndefined} from "util";
-
+import {HtmlVariationPoint} from "../helper/variationContainer/html/implementation/HtmlVariationPoint";
+import * as cheerio from "cheerio";
 
 export class HTMLVariabilityDetector {
-    
-    public static analyzeSourceFile(sourceText: string, file): string {
-        let presenceAnalyzer = new HTMLPrseenceTagAnalyzer();
+
+    public static analyzeSourceFile(sourceText: string, file): Array<HtmlVariationPoint> {
+        let presenceAnalyzer = new HTMLPresenceTagAnalyzer();
         let condTagAnalyzer = new HTMLConditionalTagAnalyzer();
-        
-        let temp = presenceAnalyzer.analyze(sourceText, file);
-        
-        return condTagAnalyzer.analyze(temp, file); 
+
+        let $ = cheerio.load(sourceText, {
+            lowerCaseAttributeNames: false
+        });
+
+        let temp = presenceAnalyzer.analyze(sourceText, file, $);
+        let temp2 = condTagAnalyzer.analyze(sourceText, file, $);
+
+        return temp.concat(temp2);
     }
 }
