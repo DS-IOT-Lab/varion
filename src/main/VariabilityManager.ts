@@ -1,45 +1,92 @@
-/**
- * Created by navid on 4/7/18.
- */
-
-import Project, { SourceFile } from "ts-simple-ast";
+import Project, {SourceFile} from "ts-simple-ast";
 import * as glob from 'glob';
 import * as fs from 'fs';
-import { TypeScriptVariabilityDetector } from "./TypeScriptVariabilityDetector";
+import {TypeScriptVariabilityDetector} from "./TypeScriptVariabilityDetector";
 import {HTMLVariabilityDetector} from "./HTMLVariabilityDetector";
-import { ConditionEvaluator } from "./ConditionEvaluator";
-import chalk from "chalk";
+import {ConditionEvaluator} from "./ConditionEvaluator";
 import * as path from "path";
+import {SourcePathToVariationPointsMap} from "../helper/SourcePathToVariationPointsMap";
+import {AbstractVariationPointContainer} from "../helper/variationContainer/AbstractVariationPointContainer";
+import {sprintf} from "sprintf-js";
+import {SourcePathToHtmlVariationPointsMap} from "../helper/SourcePathToHtmlVariationPointsMap";
+import {HtmlVariationPoint} from "../helper/variationContainer/html/implementation/HtmlVariationPoint";
+import {VariationPointContainerType} from "../helper/VariationPointContainerType";
 
-
-let htmlDerivedFiles: Array<HtmlSource> = [];
-var jsonConfig;
+let jsonConfig;
 let that;
 
 export class VariabilityManager {
     private rootDirectoryPath: String;
     private targetDirectoryPath: String;
     private configurationPath: String;
+    private sourceToVariationPointMap: SourcePathToVariationPointsMap = {};
+
+    // maps source file path of html files to HtmlVariationPoint
+    // although `sourceToVariationPointMap` contains these files as well,
+    // but for the sake of simplicity for applying variation points I thought
+    // it's better to have in another place as well
+    private sourceToHtmlVps: SourcePathToHtmlVariationPointsMap = {};
 
     private project: Project;
 
     constructor(rootDirectoryPath: string, targetDirectoryPath: string, configurationPath: string) {
-        
-        
         this.targetDirectoryPath = path.resolve(targetDirectoryPath);
         this.configurationPath = path.resolve(configurationPath);
         this.rootDirectoryPath = path.resolve(rootDirectoryPath);
-        
+
         jsonConfig = require(this.configurationPath.toString());
         ConditionEvaluator.init(jsonConfig);
-        
-        
-        this.project = new Project({ compilerOptions: { outDir: this.targetDirectoryPath.toString() } });
+
+
+        this.project = new Project({compilerOptions: {outDir: this.targetDirectoryPath.toString()}});
         this.project.addExistingSourceFiles(this.rootDirectoryPath + "/**/*.*");
 
-        this.startAnalyzingTypeScripts().then((value:any)=>{
-            this.startAnalyzingHTMLFiles();
+        this.startAnalyzingTypeScripts();
+        this.startAnalyzingHTMLFiles();
+
+    }
+
+    public getSourceToVariationPointsMap(): SourcePathToVariationPointsMap {
+        return this.sourceToVariationPointMap;
+    }
+
+    public applyVariabilities() {
+        for (let sourceFilePath in this.sourceToVariationPointMap) {
+            let variationPointsList: Array<AbstractVariationPointContainer> = this.sourceToVariationPointMap[sourceFilePath];
+
+            for (let index in variationPointsList) {
+                let variationPointItem = variationPointsList[index];
+                if (variationPointItem.getVariationPointType() !== VariationPointContainerType.HTML_CONDITIONAL_TAG
+                    && variationPointItem.getVariationPointType() !== VariationPointContainerType.HTML_PRESENCE_TAG) {
+                    variationPointItem.applyVariation();
+                }
+            }
+        }
+
+        const srcDir = this.project.getDirectoryOrThrow(this.rootDirectoryPath.toString());
+        // need to specify false here to prevent it from including other files in the directory
+        const newDir = srcDir.copy(this.targetDirectoryPath.toString(), {
+            includeUntrackedFiles: false,
+            overwrite: true
         });
+        newDir.saveSync();
+
+        // saving htmlVariationPoints
+        for (let sourceFilePath in this.sourceToHtmlVps) {
+            let variationPointsList: Array<HtmlVariationPoint> = this.sourceToHtmlVps[sourceFilePath];
+            let derivedHtml = "";
+
+            for (let index in variationPointsList) {
+                let variationPointItem = variationPointsList[index];
+                variationPointItem.applyVariation();
+                derivedHtml = variationPointItem.getSourceFileText().toString();
+            }
+
+            this.printHtmlFiles(derivedHtml, sourceFilePath);
+        }
+
+
+        return;
     }
 
     private startAnalyzingTypeScripts() {
@@ -47,76 +94,38 @@ export class VariabilityManager {
 
         for (let srcIndex in sourceFiles) {
             let srcFile: SourceFile = sourceFiles[srcIndex];
-            console.log("Analyzing " + srcFile.getBaseName());
 
             if (srcFile.getExtension() == '.ts') {
-                TypeScriptVariabilityDetector.analyzeSourceFile(srcFile);
+                let tsVariationPoints = TypeScriptVariabilityDetector.analyzeSourceFile(srcFile);
+                this.sourceToVariationPointMap[srcFile.getFilePath()] = tsVariationPoints;
             }
         }
-
-        const srcDir = this.project.getDirectoryOrThrow(this.rootDirectoryPath.toString());
-        // need to specify false here to prevent it from including other files in the directory
-        const newDir = srcDir.copy(this.targetDirectoryPath.toString(), { includeUntrackedFiles: false });
-        return newDir.save();
     }
 
     private startAnalyzingHTMLFiles() {
         that = this;
-        glob(this.rootDirectoryPath + '/**/*.html', this.htmlCallback);
-    }
+        try {
+            let files = glob.sync(this.rootDirectoryPath + '/**/*.html');
 
-    private htmlCallback(error, files) {
+            for (let i = 0; i < files.length; i++) {
+                let sourceFileText = fs.readFileSync(files[i], 'utf8');
 
-        for (let i = 0; i < files.length; i++) {
-            let sourceFileText = fs.readFileSync(files[i], 'utf8');
-            let x = files[i];
+                let variationPoints = HTMLVariabilityDetector.analyzeSourceFile(sourceFileText, files[i]);
+                that.sourceToVariationPointMap[files[i]] = variationPoints;
+                this.sourceToHtmlVps[files[i]] = variationPoints;
+            }
 
-            let derivedSource = HTMLVariabilityDetector.analyzeSourceFile(sourceFileText, files[i]);
-
-            htmlDerivedFiles.push(new HtmlSource(files[i], derivedSource));
+        } catch (e) {
+            console.error(e);
         }
 
-        that.printHtmlFiles();
     }
 
-    private printHtmlFiles() {
-        for (let i = 0; i < htmlDerivedFiles.length; i++) {
-            console.log(chalk.cyan('HTML file path: ') + htmlDerivedFiles[i].getSourcePath());
-            let pathToSave =  htmlDerivedFiles[i].getSourcePath().replace(that.rootDirectoryPath, that.targetDirectoryPath);
-            console.log(chalk.yellow('New Path: ') + pathToSave);
-            console.log(chalk.gray(htmlDerivedFiles[i].getSourceText()));
-            
-            fs.writeFile(pathToSave, htmlDerivedFiles[i].getSourceText(), (err) => {
-                if(err){
-                    console.error(err);
-                }
-            });
-        }
-    }
-}
+    private printHtmlFiles(finalHtmlContent, sourceFilePath) {
 
-class HtmlSource {
-    private sourcePath: string;
-    private sourceText: string;
+        let pathToSave = sourceFilePath.replace(that.rootDirectoryPath, that.targetDirectoryPath);
 
-    constructor(sourcePath: string, sourceText: string) {
-        this.sourcePath = sourcePath;
-        this.sourceText = sourceText;
+        fs.writeFileSync(pathToSave, finalHtmlContent, {flag: 'w'});
     }
 
-    public getSourcePath() {
-        return this.sourcePath;
-    }
-
-    public getSourceText() {
-        return this.sourceText;
-    }
-
-    public setSourceText(sourceText: string) {
-        this.sourceText = sourceText;
-    }
-
-    public setSourcePath(sourcePath: string) {
-        this.sourcePath = sourcePath;
-    }
 }

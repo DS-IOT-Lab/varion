@@ -1,5 +1,5 @@
-import chalk from 'chalk';
 import {Parser} from 'expr-eval';
+import {VariationPointStatus} from "../helper/VariationPointStatus";
 
 
 /**
@@ -28,18 +28,44 @@ export class ConditionEvaluator {
      * @param  conditionExpression condition expression string
      * @return                     evaluation result
      */
-    public static evaluate(conditionExpression): Boolean {
-        
+    public static evaluate(conditionExpression): VariationPointStatus {
+
         conditionExpression = conditionExpression.replace(/{/g, '');
         conditionExpression = conditionExpression.replace(/}/g, '');
 
         let compiledExpression = ConditionEvaluator.parser.parse(conditionExpression);
-        
+
         try {
             let res = compiledExpression.evaluate(ConditionEvaluator.configurationModel);
-            return res;
+            if (res != undefined) {
+                if (res) {
+                    return VariationPointStatus.INCLUDED;
+                } else {
+                    return VariationPointStatus.NOT_INCLUDED;
+                }
+            }
         } catch (e) {
-            console.log(chalk.red('Error: undefined configuration variable {' + conditionExpression + '}'));
+            return VariationPointStatus.UNDEFINED;
+        }
+    }
+
+    public static checkConfigurationCovers(conditionExpression: String): VariationPointStatus {
+        conditionExpression = conditionExpression.replace(/{/g, '');
+        conditionExpression = conditionExpression.replace(/}/g, '');
+
+        let compiledExpression = ConditionEvaluator.parser.parse(conditionExpression);
+
+        try {
+            let res = compiledExpression.evaluate(ConditionEvaluator.configurationModel);
+            if (res != undefined) {
+                if (res) {
+                    return VariationPointStatus.INCLUDED;
+                } else {
+                    return VariationPointStatus.NOT_INCLUDED;
+                }
+            }
+        } catch (e) {
+            return VariationPointStatus.UNDEFINED;
         }
     }
 }

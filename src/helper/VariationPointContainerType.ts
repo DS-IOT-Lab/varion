@@ -7,5 +7,6 @@ export enum VariationPointContainerType {
     TS_ENUM = 6,
     TS_IMPORT = 7,
     TS_INNER_HTML = 8,
-    HTML_GENERAL = 9
+    HTML_PRESENCE_TAG = 9,
+    HTML_CONDITIONAL_TAG = 10
 }

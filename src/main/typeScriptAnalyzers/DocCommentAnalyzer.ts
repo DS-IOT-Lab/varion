@@ -1,20 +1,7 @@
-import {
-    ImportDeclaration,
-    SourceFile,
-    SyntaxKind,
-    Block,
-    ClassDeclaration,
-    ts,
-    JSDoc,
-    JSDocTag,
-    Decorator,
-    MethodDeclaration,
-    Node
-} from "ts-simple-ast";
-
+import {JSDoc, JSDocTag} from "ts-simple-ast";
 import {ConditionEvaluator} from '../ConditionEvaluator';
-import {Analyzer} from './Analyzer';
 import * as doctrine from 'doctrine';
+import {VariationPointStatus} from "../../helper/VariationPointStatus";
 
 /**
  * [analyzeJsDoc description]
@@ -26,10 +13,27 @@ export class DocCommentAnalyzer {
     /**
      * This function analyzes and evaluates a given JS Document and searches
      * for the '@presence' tag
-     * @param  jsDoc {JsDoc} given JS document to analyze and evaluate
+     * @param  jsDoc {JSDoc} given JS document to analyze and evaluate
      * @return       {boolean} returns the evaluation result
      */
-    public static analyzeJsDoc(jsDoc: JSDoc): boolean {
+    public static analyzeJsDoc(jsDoc: JSDoc): VariationPointStatus {
+
+        let presenceConditionComment = this.extractVariabilityExpression(jsDoc);
+
+        // no variation point means that code must remain in the final product
+        if (presenceConditionComment == null) {
+            return VariationPointStatus.INCLUDED
+        } else {
+            return ConditionEvaluator.evaluate(presenceConditionComment);
+        }
+    }
+
+    /**
+     * TODO: document!
+     * @param {JSDoc} jsDoc
+     * @returns {String}
+     */
+    public static extractVariabilityExpression(jsDoc: JSDoc): String {
         let tags = jsDoc.getTags();
 
         // searching for '@presence' tag
@@ -39,17 +43,11 @@ export class DocCommentAnalyzer {
 
             // if tag name is 'presence' then check the comment part
             if (tagName == 'presence') {
-                let tagComment = currentTag.getComment();
-                let variationResult = ConditionEvaluator.evaluate(tagComment);
-                console.log('\t\tpresence result = ' + variationResult);
-
-                if (!variationResult) {
-                    return false;   // TODO: ask if its ok?!
-                }
+                return currentTag.getComment();
             }
         }
 
-        return true;
+        return null;
     }
 
 
@@ -59,9 +57,8 @@ export class DocCommentAnalyzer {
      * @param  commentText {string} single comment text
      * @return             {boolean} return the evaluation result
      */
-    public static analyzeSingleLineComment(commentText: string): boolean {
+    public static analyzeSingleLineComment(commentText: string): VariationPointStatus {
         commentText = commentText.replace(/\//g, '').trim();
-        console.log('\t\t\t\tsingle line comment Text -> "' + commentText + '"');
 
         // turn the single comment to jsdoc comment and parse using doctrine lib
         let parsedDoc = doctrine.parse(['/**', ' * ' + commentText, '*/'].join('\n'), {unwrap: true});
@@ -69,16 +66,10 @@ export class DocCommentAnalyzer {
         // search for '@presence' tag
         for (let i = 0; i < parsedDoc.tags.length; i++) {
             if (parsedDoc.tags[i].title === 'presence') {
-                let variationResult = ConditionEvaluator.evaluate(parsedDoc.tags[i].description);
-
-                console.log('\t\t\t\t\tPresence result = ' + variationResult);
-
-                if (!variationResult) {
-                    return false;   // TODO: ask if its ok?!
-                }
+                return ConditionEvaluator.evaluate(parsedDoc.tags[i].description);
             }
         }
 
-        return true;
+        return VariationPointStatus.UNDEFINED;
     }
 }

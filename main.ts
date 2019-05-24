@@ -1,29 +1,32 @@
 import {VariabilityManager} from "./src/main/VariabilityManager.js";
-import * as path from "path";
 
 
-module.exports = function (sourceDirectory, targetDirectory, configFile, callback) {
-    
-    return new Promise((resolve, reject) => {
+function variability(sourceDirectory, targetDirectory, configFile) {
+
         sourceDirectory = sourceDirectory.trim();
         targetDirectory = targetDirectory.trim();
         configFile = configFile.trim();
-        
+
         var invalidArguments = (sourceDirectory == '') || (sourceDirectory == undefined) ||
-                        (targetDirectory == '') || (targetDirectory == undefined) ||
-                        (configFile == '') || (configFile == undefined);
-                        
+            (targetDirectory == '') || (targetDirectory == undefined) ||
+            (configFile == '') || (configFile == undefined);
+
         console.log(invalidArguments);
-        
+
         if (invalidArguments) {
-            reject('one of the given paths is not valid');
-            return callback('one of the given paths is not valid');
+            return 0;
         } else {
             sourceDirectory = sourceDirectory;
             targetDirectory = targetDirectory;
             configFile = configFile;
+
+            let varion = new VariabilityManager(sourceDirectory, targetDirectory, configFile);
             
-            var varion = new VariabilityManager(sourceDirectory, targetDirectory, configFile);
+            varion.applyVariabilities();
         }
-    });
 }
+
+variability('/home/navid/dev/Varion/src/testScripts'
+    , '/home/navid/Desktop/target'
+    , '/home/navid/dev/Varion/src/configuration/dev-variability.json'
+);
