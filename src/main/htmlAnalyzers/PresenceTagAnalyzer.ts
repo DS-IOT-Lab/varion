@@ -1,77 +1,41 @@
-
 import {Analyzer} from './Analyzer'
 import {ConditionEvaluator} from '../ConditionEvaluator';
-import * as cheerio from 'cheerio';
-import chalk from 'chalk';
+import {HtmlVariationPoint} from "../../helper/variationContainer/html/implementation/HtmlVariationPoint";
+import {VariationPointContainerType} from "../../helper/VariationPointContainerType";
 
-export class HTMLPrseenceTagAnalyzer extends Analyzer {
+export class HTMLPresenceTagAnalyzer extends Analyzer {
     private $: any;
 
-    constructor(){
+    constructor() {
         super();
     }
-    
-    public analyze(sourceText: string, file): string {
-        return this.searchForPresenceTags(sourceText, file);
+
+    analyze(sourceText: string, file, $ = null): Array<HtmlVariationPoint> {
+        this.$ = $;
+        return this.searchForPresenceTags(sourceText, file, $);
     }
-    
 
-    private searchForPresenceTags
-    (sourceText: string, file) {
-        this.$ = cheerio.load(sourceText,  {
-            lowerCaseAttributeNames: false
-        });
-        
+
+    private searchForPresenceTags(sourceText: string, file, $): Array<HtmlVariationPoint> {
+        let variationPointsList: Array<HtmlVariationPoint> = [];
+
         // get the html '<presence> ... </presence>' tags
-        let presenceTags = this.$('presence');   
+        let presenceTags = this.$('presence');
 
-        console.log(chalk.cyan(file));
         for (let i = 0; i < presenceTags.length; i++) {
-            
+
             // get the condition attribute of presence tags
-            let conditionExp = this.$(presenceTags[i]).attr('condition');    
-            
+            let conditionExp = this.$(presenceTags[i]).attr('condition');
+
             if (conditionExp != undefined) {
-                
+                let variationPoint = new HtmlVariationPoint(presenceTags[i], conditionExp, VariationPointContainerType.HTML_PRESENCE_TAG, this.$);
                 let res = ConditionEvaluator.evaluate(conditionExp);
-                console.log(
-                    chalk.green('\tCondition Expression: ') 
-                    + conditionExp 
-                    + chalk.blue(', Result -> ') 
-                    + res);
-                
-                    this.
-                    applyVariabilityOnPresenceTag
-                    (presenceTags[i], res.valueOf());
-                    
-            } else {
-                // no conditon attribute is defined 
-                console.log(
-                chalk.green('\tCondition Expression: ') 
-                + 'No Condition Expression Found!');
-                
+
+                variationPoint.setVariationPointState(res);
+                variationPointsList.push(variationPoint);
             }
         }
 
-        // no variation point is declared in the sourceFile text
-        if (presenceTags.length == 0) {
-            console.log('\tNo variation point found for this document.')
-        }
-        
-        return this.$.html();
-    }
-    
-    
-    private applyVariabilityOnPresenceTag
-    (presenceTag, evaluationResult: boolean) {
-        
-        // apply the variability on html file
-        if (!evaluationResult) {
-            this.$(presenceTag).empty();
-            this.$(presenceTag).remove();
-        } else {
-            let content = this.$(presenceTag).contents();
-            this.$(presenceTag).replaceWith(content);
-        }
+        return variationPointsList;
     }
 }
